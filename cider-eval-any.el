@@ -11,6 +11,26 @@
 
 ;;; Code:
 
+(require 'cider)
+
+(defgroup cider-eval-any nil
+  "Evaluate any buffer in cider."
+  :group 'cider)
+
+(defvar cider-eval-any-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-c C-c") 'cider-eval-any-buffer)
+    map)
+  "Keymap for `cider-eval-any-mode'.")
+
+;;;###autoload
+(define-minor-mode cider-eval-any-mode
+  "Evaluate any buffer in the cider.
+
+\\{cider-eval-any-mode-map}"
+  :lighter " Cider-Any"
+  :keymap cider-eval-any-mode-map)
+
 (provide 'cider-eval-any)
 
 ;;; cider-eval-any.el ends here

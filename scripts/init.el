@@ -12,6 +12,8 @@
 
 (require 'cider-eval-any)
 
+(add-hook 'xquery-mode-hook 'cider-eval-any-mode)
+
 (provide 'init)
 
 ;;; init.el ends here
