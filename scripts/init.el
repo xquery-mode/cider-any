@@ -4,6 +4,7 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'cask)
 
 (let ((source-directory (locate-dominating-file load-file-name "Cask")))
@@ -13,6 +14,13 @@
 (require 'cider-eval-any)
 
 (add-hook 'xquery-mode-hook 'cider-eval-any-mode)
+
+(defun cider-eval-any-xquery (command &rest args)
+  (cl-case command
+    (check (eq major-mode 'xquery-mode))
+    (eval (message "It works"))))
+
+(add-to-list 'cider-eval-any-backends 'cider-eval-any-xquery)
 
 (provide 'init)
 
