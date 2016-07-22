@@ -1,4 +1,4 @@
-;;; init.el --- minimal cider-eval-any configuration
+;;; init.el --- minimal cider-any configuration
 
 ;;; Commentary:
 
@@ -11,16 +11,16 @@
   (cask-initialize source-directory)
   (add-to-list 'load-path source-directory))
 
-(require 'cider-eval-any)
+(require 'cider-any)
 
-(add-hook 'xquery-mode-hook 'cider-eval-any-mode)
+(add-hook 'xquery-mode-hook 'cider-any-mode)
 
-(defun cider-eval-any-xquery (command &rest args)
+(defun cider-any-xquery (command &rest args)
   (cl-case command
     (check (eq major-mode 'xquery-mode))
     (eval (message "It works"))))
 
-(add-to-list 'cider-eval-any-backends 'cider-eval-any-xquery)
+(add-to-list 'cider-any-backends 'cider-any-xquery)
 
 (provide 'init)
 

@@ -1,9 +1,9 @@
-;;; cider-eval-any.el --- Evaluate any buffer in cider.
+;;; cider-any.el --- Evaluate any buffer in cider.
 
 ;; Copyright (C) 2016 by Artem Malyshev
 
 ;; Author: Artem Malyshev <proofit404@gmail.com>
-;; URL: https://github.com/xquery-mode/cider-eval-any
+;; URL: https://github.com/xquery-mode/cider-any
 ;; Version: 0.0.1
 ;; Package-Requires: ((cider "0.13.0"))
 
@@ -13,11 +13,11 @@
 
 (require 'cider)
 
-(defgroup cider-eval-any nil
+(defgroup cider-any nil
   "Evaluate any buffer in cider."
   :group 'cider)
 
-(defcustom cider-eval-any-backends nil
+(defcustom cider-any-backends nil
   "The list of active backends.
 
 Only one backend is used at a time.  Each backend is a function
@@ -35,38 +35,38 @@ second argument is the context type passed as a symbol.
 types."
   :type '(repeat :tag "User defined" (function)))
 
-(defvar cider-eval-any-mode-map
+(defvar cider-any-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-c C-c") 'cider-eval-any-buffer)
-    (define-key map (kbd "C-M-x") 'cider-eval-any-function)
-    (define-key map (kbd "C-c C-l") 'cider-eval-any-line)
-    (define-key map (kbd "C-c C-r") 'cider-eval-any-region)
+    (define-key map (kbd "C-c C-c") 'cider-any-buffer)
+    (define-key map (kbd "C-M-x") 'cider-any-function)
+    (define-key map (kbd "C-c C-l") 'cider-any-line)
+    (define-key map (kbd "C-c C-r") 'cider-any-region)
     map)
-  "Keymap for `cider-eval-any-mode'.")
+  "Keymap for `cider-any-mode'.")
 
-(defun cider-eval-any-buffer ()
+(defun cider-any-buffer ()
   "Eval current buffer in cider."
   (interactive)
-  (cider-eval-any-eval 'buffer))
+  (cider-any-eval 'buffer))
 
-(defun cider-eval-any-function ()
+(defun cider-any-function ()
   "Eval current function in cider."
   (interactive)
-  (cider-eval-any-eval 'function))
+  (cider-any-eval 'function))
 
-(defun cider-eval-any-line ()
+(defun cider-any-line ()
   "Eval current line in cider."
   (interactive)
-  (cider-eval-any-eval 'line))
+  (cider-any-eval 'line))
 
-(defun cider-eval-any-region ()
+(defun cider-any-region ()
   "Eval current region in cider."
   (interactive)
-  (cider-eval-any-eval 'region))
+  (cider-any-eval 'region))
 
-(defun cider-eval-any-eval (context)
+(defun cider-any-eval (context)
   "Try to evaluate current CONTEXT."
-  (let ((backends cider-eval-any-backends)
+  (let ((backends cider-any-backends)
         backend found)
     (while (and (not found) backends)
       (setq backend (car-safe backends)
@@ -78,13 +78,13 @@ types."
       (error "Can not evaluate current %s" context))))
 
 ;;;###autoload
-(define-minor-mode cider-eval-any-mode
+(define-minor-mode cider-any-mode
   "Evaluate any buffer in the cider.
 
-\\{cider-eval-any-mode-map}"
+\\{cider-any-mode-map}"
   :lighter " Cider-Any"
-  :keymap cider-eval-any-mode-map)
+  :keymap cider-any-mode-map)
 
-(provide 'cider-eval-any)
+(provide 'cider-any)
 
-;;; cider-eval-any.el ends here
+;;; cider-any.el ends here
