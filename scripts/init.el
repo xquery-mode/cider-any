@@ -16,6 +16,8 @@
 (add-hook 'xquery-mode-hook 'cider-any-mode)
 
 (defun cider-any-xquery (command &rest args)
+  "Eval XQuery in Cider.
+Read backend reference for COMMAND and ARGS purpose description."
   (cl-case command
     (check (eq major-mode 'xquery-mode))
     (eval (message "It works"))))
