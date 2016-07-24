@@ -1,4 +1,4 @@
-;;; cider-any.el --- Evaluate any buffer in cider.
+;;; cider-any.el --- Evaluate any buffer in cider.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016 by Artem Malyshev
 
@@ -11,6 +11,7 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'cider)
 
 (defgroup cider-any nil
@@ -35,7 +36,8 @@ second argument is the context type passed as a symbol.
 types."
   :type '(repeat :tag "User defined" (function)))
 
-(defvar cider-any-initiated-backends nil)
+(defvar cider-any-initiated-backends nil
+  "Keep initialized backends.")
 
 (defvar cider-any-mode-map
   (let ((map (make-sparse-keymap)))
@@ -66,6 +68,29 @@ types."
   (interactive)
   (cider-any-eval 'region))
 
+(defun cider-any-eval-arg (context)
+  "Get eval substitution for CONTEXT."
+  (replace-regexp-in-string
+   "\\\""
+   "\\\\\""
+   (apply
+    #'buffer-substring-no-properties 
+    (cl-case context
+      (buffer `(,(point-min)
+		,(point-max)))
+      (function `(,(save-excursion
+		     (beginning-of-defun)
+		     (point))
+		  ,(save-excursion
+		     (end-of-defun)
+		     (point))))
+      (line `(,(line-beginning-position)
+	      ,(line-end-position)))
+      (region (if (not (region-active-p))
+		  (error "Region is not marked")
+		`(,(region-beginning)
+		  ,(region-end))))))))
+
 (defun cider-any-eval (context)
   "Try to evaluate current CONTEXT."
   (let ((backends cider-any-backends)
@@ -78,9 +103,15 @@ types."
     (if (not backend)
         (error "Can not evaluate current %s" context)
       (unless (memq backend cider-any-initiated-backends)
-	(let ((expr (apply backend '(init))))
-	  (push backend cider-any-initiated-backends)))
-      (apply backend '(eval context)))))
+	(push backend cider-any-initiated-backends)
+	(cider-interactive-eval
+	 (apply backend '(init))
+	 (apply backend '(handle-init))))
+      (cider-interactive-eval
+       (format
+	(apply backend '(eval context))
+	(cider-any-eval-arg context))
+       (apply backend '(handle))))))
 
 ;;;###autoload
 (define-minor-mode cider-any-mode

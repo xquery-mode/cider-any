@@ -1,4 +1,4 @@
-;;; init.el --- minimal cider-any configuration
+;;; init.el --- minimal cider-any configuration  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 
@@ -23,7 +23,9 @@ Read backend reference for COMMAND and ARGS purpose description."
   (cl-case command
     (check (eq major-mode 'xquery-mode))
     (init "(defn foo [x] (println x))")
-    (eval "(default.core/foo \"%s\")")))
+    (eval "(foo \"%s\")")
+    (handle (lambda (&rest args) (message ">>> %s <<<" args)))
+    (handle-init (lambda (&rest args) (message ">>> %s <<<" args)))))
 
 (add-to-list 'cider-any-backends 'cider-any-xquery)
 
