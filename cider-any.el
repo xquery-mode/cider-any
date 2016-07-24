@@ -35,6 +35,8 @@ second argument is the context type passed as a symbol.
 types."
   :type '(repeat :tag "User defined" (function)))
 
+(defvar cider-any-initiated-backends nil)
+
 (defvar cider-any-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-c C-c") 'cider-any-buffer)
@@ -73,9 +75,12 @@ types."
             backends (cdr-safe backends))
       (when (apply backend '(check))
         (setq found t)))
-    (if backend
-        (apply backend '(eval context))
-      (error "Can not evaluate current %s" context))))
+    (if (not backend)
+        (error "Can not evaluate current %s" context)
+      (unless (memq backend cider-any-initiated-backends)
+	(let ((expr (apply backend '(init))))
+	  (push backend cider-any-initiated-backends)))
+      (apply backend '(eval context)))))
 
 ;;;###autoload
 (define-minor-mode cider-any-mode

@@ -13,6 +13,8 @@
 
 (require 'cider-any)
 
+(add-hook 'clojure-mode-hook 'cider-mode)
+
 (add-hook 'xquery-mode-hook 'cider-any-mode)
 
 (defun cider-any-xquery (command &rest args)
@@ -20,7 +22,8 @@
 Read backend reference for COMMAND and ARGS purpose description."
   (cl-case command
     (check (eq major-mode 'xquery-mode))
-    (eval (message "It works"))))
+    (init "(defn foo [x] (println x))")
+    (eval "(default.core/foo \"%s\")")))
 
 (add-to-list 'cider-any-backends 'cider-any-xquery)
 
