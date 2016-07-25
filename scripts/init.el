@@ -22,10 +22,10 @@
 Read backend reference for COMMAND and ARGS purpose description."
   (cl-case command
     (check (eq major-mode 'xquery-mode))
-    (init "(defn foo [x] (println x))")
+    (init "(defn foo [x] (println x) x)")
     (eval "(foo \"%s\")")
-    (handle (lambda (&rest args) (message ">>> %s <<<" args)))
-    (handle-init (lambda (&rest args) (message ">>> %s <<<" args)))))
+    (handle (message ">>> %s <<<" args))
+    (handle-init (message ">>> %s <<<" args))))
 
 (add-to-list 'cider-any-backends 'cider-any-xquery)
 

@@ -30,10 +30,25 @@ following:
 current context.  Returning nil from this command passe control
 to the next backend.
 
-`eval' Request to perform evaluation of current context.  The
+`init': Backend initialization form.  Result should be string
+contains valid clojure form.  This form will be evaluated ones in
+the user session.
+
+`handle-init': Process initialization result.  The second
+argument will hold initialization form result calculated
+asynchronously.  It is list of strings.
+
+`eval': Request to perform evaluation of current context.  The
 second argument is the context type passed as a symbol.
 `buffer', `function', `line' and `region' are default context
-types."
+types.  Return value must be a string containing clojure form
+which can actually evaluate given context.  It can contain %s
+signature which will be substituted with actual evaluation
+content.
+
+`handle': Handle evaluation result.  The second argument will be
+an evaluation result.  As with `handle-init' result is
+represented as list of strings."
   :type '(repeat :tag "User defined" (function)))
 
 (defvar cider-any-initiated-backends nil
@@ -74,22 +89,36 @@ types."
    "\\\""
    "\\\\\""
    (apply
-    #'buffer-substring-no-properties 
+    #'buffer-substring-no-properties
     (cl-case context
       (buffer `(,(point-min)
-		,(point-max)))
+                ,(point-max)))
       (function `(,(save-excursion
-		     (beginning-of-defun)
-		     (point))
-		  ,(save-excursion
-		     (end-of-defun)
-		     (point))))
+                     (beginning-of-defun)
+                     (point))
+                  ,(save-excursion
+                     (end-of-defun)
+                     (point))))
       (line `(,(line-beginning-position)
-	      ,(line-end-position)))
+              ,(line-end-position)))
       (region (if (not (region-active-p))
-		  (error "Region is not marked")
-		`(,(region-beginning)
-		  ,(region-end))))))))
+                  (error "Region is not marked")
+                `(,(region-beginning)
+                  ,(region-end))))))))
+
+(defun cider-any-eval-handler (backend eval-context)
+  "Make an interactive eval handler for BACKEND.
+EVAL-CONTEXT is a BACKEND command which can be either a `handle'
+or `handle-init'."
+  (nrepl-make-response-handler
+   (current-buffer)
+   (lambda (_buffer value)
+     (apply backend `(,eval-context ,value)))
+   (lambda (_buffer out)
+     (cider-emit-interactive-eval-output out))
+   (lambda (_buffer err)
+     (cider-emit-interactive-eval-err-output err))
+   '()))
 
 (defun cider-any-eval (context)
   "Try to evaluate current CONTEXT."
@@ -103,15 +132,15 @@ types."
     (if (not backend)
         (error "Can not evaluate current %s" context)
       (unless (memq backend cider-any-initiated-backends)
-	(push backend cider-any-initiated-backends)
-	(cider-interactive-eval
-	 (apply backend '(init))
-	 (apply backend '(handle-init))))
+        (push backend cider-any-initiated-backends)
+        (cider-interactive-eval
+         (apply backend '(init))
+         (cider-any-eval-handler backend 'handle-init)))
       (cider-interactive-eval
        (format
-	(apply backend '(eval context))
-	(cider-any-eval-arg context))
-       (apply backend '(handle))))))
+        (apply backend '(eval context))
+        (cider-any-eval-arg context))
+       (cider-any-eval-handler backend 'handle)))))
 
 ;;;###autoload
 (define-minor-mode cider-any-mode
