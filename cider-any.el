@@ -27,12 +27,12 @@ the command requested from the backend.  It is one of the
 following:
 
 `check': The backend should return t in the case it can eval in
-current context.  Returning nil from this command passe control
+current context.  Returning nil from this command passed control
 to the next backend.
 
-`init': Backend initialization form.  Result should be string
-contains valid clojure form.  This form will be evaluated ones in
-the user session.
+`init': Backend initialization form.  Result should be a string
+that contains a valid clojure form.  This form will be evaluated
+once in the user session.
 
 `handle-init': Process initialization result.  The second
 argument will hold initialization form result calculated
@@ -41,8 +41,8 @@ asynchronously.  It is list of strings.
 `eval': Request to perform evaluation of current context.  The
 second argument is the context type passed as a symbol.
 `buffer', `function', `line' and `region' are default context
-types.  Return value must be a string containing clojure form
-which can actually evaluate given context.  It can contain %s
+types.  Return value must be a string containing the clojure form
+which can actually evaluate the given context.  It can contain %s
 signature which will be substituted with actual evaluation
 content.
 
