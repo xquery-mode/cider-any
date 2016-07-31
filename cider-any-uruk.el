@@ -31,6 +31,9 @@
   :type 'string
   :group 'cider-any-uruk)
 
+(defcustom cider-any-uruk-handler 'cider-any-uruk-browse
+  "Response handle function.")
+
 (defun cider-any-uruk-plist-to-map (&rest plist)
   "Convert Elisp PLIST into Clojure map."
   (concat "{"
@@ -41,6 +44,13 @@
                      plist
                      " ")
           "}"))
+
+(defun cider-any-uruk-browse (content)
+  "Show CONTENT in browser."
+  (let ((filename (make-temp-file "cider-any-uruk")))
+    (with-temp-file filename
+      (insert content))
+    (browse-url (concat "file://" filename))))
 
 (defun cider-any-uruk (command &rest args)
   "Eval XQuery in Cider."
@@ -55,8 +65,7 @@
                    :user cider-any-uruk-user
                    :password cider-any-uruk-password
                    :content-base cider-any-uruk-content-base)))
-    (handle (message ">>> %s <<<" args))
-    (handle-init (message ">>> %s <<<" args))))
+    (handle (apply cider-any-uruk-handler (read args)))))
 
 (add-to-list 'cider-any-backends 'cider-any-uruk)
 
