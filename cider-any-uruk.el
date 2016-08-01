@@ -1,4 +1,4 @@
-;;; init.el --- Evaluate XQuery with uruk in the cider  -*- lexical-binding: t; -*-
+;;; cider-any-uruk.el --- Evaluate XQuery with uruk in the cider  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 
@@ -31,9 +31,14 @@
   :type 'string
   :group 'cider-any-uruk)
 
-(defcustom cider-any-uruk-handler 'cider-any-uruk-browse
+(defcustom cider-any-uruk-handler 'cider-any-uruk-display-buffer
   "Response handle function."
   :type 'function
+  :group 'cider-any-uruk)
+
+(defcustom cider-any-uruk-buffer-name "*XQuery*"
+  "Base buffer name to show XQuery documents."
+  :type 'string
   :group 'cider-any-uruk)
 
 (defun cider-any-uruk-plist-to-map (&rest plist)
@@ -48,14 +53,23 @@
           "}"))
 
 (defun cider-any-uruk-browse (content)
-  "Show CONTENT in browser."
+  "Show CONTENT in the browser."
   (let ((filename (make-temp-file "cider-any-uruk")))
     (with-temp-file filename
       (insert content))
     (browse-url (concat "file://" filename))))
 
+(defun cider-any-uruk-display-buffer (content)
+  "Show CONTENT in the buffer."
+  (with-current-buffer (generate-new-buffer cider-any-uruk-buffer-name)
+    (insert content)
+    (goto-char (point-min))
+    (normal-mode)
+    (display-buffer (current-buffer))))
+
 (defun cider-any-uruk (command &rest args)
-  "Eval XQuery in Cider."
+  "Eval XQuery in Cider.
+COMMAND and ARGS stands for `cider-any' backend documentation."
   (cl-case command
     (check (eq major-mode 'xquery-mode))
     (init "(require '[uruk.core :as uruk])")
