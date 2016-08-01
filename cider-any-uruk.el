@@ -32,7 +32,9 @@
   :group 'cider-any-uruk)
 
 (defcustom cider-any-uruk-handler 'cider-any-uruk-browse
-  "Response handle function.")
+  "Response handle function."
+  :type 'function
+  :group 'cider-any-uruk)
 
 (defun cider-any-uruk-plist-to-map (&rest plist)
   "Convert Elisp PLIST into Clojure map."
@@ -40,7 +42,7 @@
           (mapconcat #'(lambda (element)
                          (cl-case (type-of element)
                            (string (concat "\"" element "\""))
-                           (symbol (symbol-name element)))) 
+                           (symbol (symbol-name element))))
                      plist
                      " ")
           "}"))
