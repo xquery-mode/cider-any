@@ -6,6 +6,7 @@
 
 (require 'cl-lib)
 (require 'cider-any)
+(require 'page-break-lines)
 
 (defgroup cider-any-uruk nil
   "Evaluate XQuery documents in the cider repl."
@@ -64,14 +65,21 @@
 
 (defun cider-any-uruk-display-buffer (&rest content)
   "Show CONTENT in the buffer."
-  (with-current-buffer (generate-new-buffer cider-any-uruk-buffer-name)
-    (insert (first content))
-    (dolist (item (rest content))
-      (insert "\n----\n")
-      (insert item))
-    (goto-char (point-min))
-    (normal-mode)
-    (display-buffer (current-buffer))))
+  (let (points)
+    (with-current-buffer (generate-new-buffer cider-any-uruk-buffer-name)
+      (insert (car content))
+      (dolist (item (cdr content))
+        (insert "\n")
+        (insert (make-string 1 ?\))
+        (insert "\n")
+        (push (cons (- (point) 3) (point)) points)
+        (insert item))
+      (dolist (pos points)
+        (put-text-property (car pos) (cdr pos) 'read-only t))
+      (goto-char (point-min))
+      (normal-mode)
+      (page-break-lines-mode 1)
+      (display-buffer (current-buffer)))))
 
 (defun cider-any-uruk (command &rest args)
   "Eval XQuery in Cider.

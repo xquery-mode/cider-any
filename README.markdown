@@ -11,7 +11,8 @@ System requirements:
 * Clojure
 * Leiningen
 * Cider
-* Uruk library
+* Page break lines emacs lisp library
+* Uruk clojure library
 * MarkLogic server access
 
 Load Emacs Lisp libraries in your configuration.
