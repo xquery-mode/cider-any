@@ -59,10 +59,13 @@
       (insert content))
     (browse-url (concat "file://" filename))))
 
-(defun cider-any-uruk-display-buffer (content)
+(defun cider-any-uruk-display-buffer (&rest content)
   "Show CONTENT in the buffer."
   (with-current-buffer (generate-new-buffer cider-any-uruk-buffer-name)
-    (insert content)
+    (insert (first content))
+    (dolist (item (rest content))
+      (insert "\n----\n")
+      (insert item))
     (goto-char (point-min))
     (normal-mode)
     (display-buffer (current-buffer))))
