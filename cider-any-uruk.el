@@ -52,12 +52,15 @@
                      " ")
           "}"))
 
-(defun cider-any-uruk-browse (content)
+(defun cider-any-uruk-browse (&rest content)
   "Show CONTENT in the browser."
-  (let ((filename (make-temp-file "cider-any-uruk")))
-    (with-temp-file filename
-      (insert content))
-    (browse-url (concat "file://" filename))))
+  (mapc
+   (lambda (result)
+     (let ((filename (make-temp-file "cider-any-uruk")))
+       (with-temp-file filename
+         (insert result))
+       (browse-url (concat "file://" filename))))
+   content))
 
 (defun cider-any-uruk-display-buffer (&rest content)
   "Show CONTENT in the buffer."
