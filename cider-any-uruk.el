@@ -78,7 +78,7 @@ COMMAND and ARGS stands for `cider-any' backend documentation."
     (init "(require '[uruk.core :as uruk])")
     (eval (format "(let [db %s]
                      (with-open [session (uruk/create-session db)]
-                       (uruk/execute-xquery session \"%%s\")))"
+                       (map str (uruk/execute-xquery session \"%%s\"))))"
                   (cider-any-uruk-plist-to-map
                    :uri cider-any-uruk-uri
                    :user cider-any-uruk-user
