@@ -42,6 +42,9 @@
   :type 'string
   :group 'cider-any-uruk)
 
+(defvar-local cider-any-uruk-variables nil
+  "Plist of variables used in uruk query map.")
+
 (defun cider-any-uruk-plist-to-map (&rest plist)
   "Convert Elisp PLIST into Clojure map."
   (concat "{"
@@ -91,12 +94,13 @@ COMMAND and ARGS stands for `cider-any' backend documentation."
     (init "(require '[uruk.core :as uruk])")
     (eval (format "(let [db %s]
                      (with-open [session (uruk/create-session db)]
-                       (doall (map str (uruk/execute-xquery session \"%%s\")))))"
+                       (doall (map str (uruk/execute-xquery session \"%%s\" {:variables %s})))))"
                   (cider-any-uruk-plist-to-map
                    :uri cider-any-uruk-uri
                    :user cider-any-uruk-user
                    :password cider-any-uruk-password
-                   :content-base cider-any-uruk-content-base)))
+                   :content-base cider-any-uruk-content-base)
+		  (apply 'cider-any-uruk-plist-to-map cider-any-uruk-variables)))
     (handle (apply cider-any-uruk-handler (read args)))))
 
 (add-to-list 'cider-any-backends 'cider-any-uruk)
