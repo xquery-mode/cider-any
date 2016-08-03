@@ -112,8 +112,9 @@ EVAL-CONTEXT is a BACKEND command which can be either a `handle'
 or `handle-init'."
   (nrepl-make-response-handler
    (current-buffer)
-   (lambda (_buffer value)
-     (apply backend `(,eval-context ,value)))
+   (lambda (buffer value)
+     (with-current-buffer buffer
+       (apply backend `(,eval-context ,value))))
    (lambda (_buffer out)
      (cider-emit-interactive-eval-output out))
    (lambda (_buffer err)
