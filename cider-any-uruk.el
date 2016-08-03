@@ -37,7 +37,7 @@
   :type 'function
   :group 'cider-any-uruk)
 
-(defcustom cider-any-uruk-buffer-name "*XQuery*"
+(defcustom cider-any-uruk-buffer-template "*XQuery-Result-%s*"
   "Base buffer name to show XQuery documents."
   :type 'string
   :group 'cider-any-uruk)
@@ -66,7 +66,10 @@
 (defun cider-any-uruk-display-buffer (&rest content)
   "Show CONTENT in the buffer."
   (pop-to-buffer
-   (with-current-buffer (generate-new-buffer cider-any-uruk-buffer-name)
+   (with-current-buffer 
+       (get-buffer-create (format cider-any-uruk-buffer-template (buffer-name)))
+     (read-only-mode -1)
+     (erase-buffer)
      (insert (car content))
      (dolist (item (cdr content))
        (insert "\n")
