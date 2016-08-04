@@ -45,13 +45,18 @@
 (defvar-local cider-any-uruk-variables nil
   "Plist of variables used in uruk query map.")
 
-(defun cider-any-uruk-plist-to-map (&rest plist)
+(defun cider-any-uruk-plist-to-map (plist)
   "Convert Elisp PLIST into Clojure map."
   (concat "{"
           (mapconcat #'(lambda (element)
-                         (cl-case (type-of element)
-                           (string (concat "\"" element "\""))
-                           (symbol (symbol-name element))))
+                         (if (eq element t)
+                             "true"
+                           (cl-case (type-of element)
+                             (cons (cider-any-uruk-plist-to-map element))
+                             (integer (number-to-string element))
+                             (float (number-to-string element))
+                             (string (concat "\"" element "\""))
+                             (symbol (symbol-name element)))))
                      plist
                      " ")
           "}"))
@@ -99,11 +104,11 @@
                                  \"\")
                                 {:variables %s})))))"
           (cider-any-uruk-plist-to-map
-           :uri cider-any-uruk-uri
-           :user cider-any-uruk-user
-           :password cider-any-uruk-password
-           :content-base cider-any-uruk-content-base)
-          (apply 'cider-any-uruk-plist-to-map cider-any-uruk-variables)))
+           `(:uri ,cider-any-uruk-uri
+             :user ,cider-any-uruk-user
+             :password ,cider-any-uruk-password
+             :content-base ,cider-any-uruk-content-base))
+          (cider-any-uruk-plist-to-map cider-any-uruk-variables)))
 
 (defun cider-any-uruk (command &rest args)
   "Eval XQuery in Cider.
