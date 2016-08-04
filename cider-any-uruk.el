@@ -42,8 +42,14 @@
   :type 'string
   :group 'cider-any-uruk)
 
+(defun cider-any-uruk-safe-variables-p (variables)
+  (and (consp variables)
+       (= 0 (% (length variables) 2))))
+
 (defvar-local cider-any-uruk-variables nil
   "Plist of variables used in uruk query map.")
+
+(put 'cider-any-uruk-variables 'safe-local-variable 'cider-any-uruk-safe-variables-p)
 
 (defun cider-any-uruk-plist-to-map (plist)
   "Convert Elisp PLIST into Clojure map."
