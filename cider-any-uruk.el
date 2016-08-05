@@ -80,7 +80,7 @@
 (defun cider-any-uruk-display-buffer (&rest content)
   "Show CONTENT in the buffer."
   (pop-to-buffer
-   (with-current-buffer 
+   (with-current-buffer
        (get-buffer-create (format cider-any-uruk-buffer-template (buffer-name)))
      (read-only-mode -1)
      (erase-buffer)
