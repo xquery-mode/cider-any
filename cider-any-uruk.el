@@ -94,7 +94,7 @@
      (normal-mode)
      (page-break-lines-mode 1)
      (read-only-mode 1)
-     (local-set-key (kbd "q") 'bury-buffer)
+     (local-set-key (kbd "q") 'quit-window)
      (current-buffer))))
 
 (defun cider-any-uruk-eval-form ()
