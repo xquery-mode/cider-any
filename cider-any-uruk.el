@@ -138,9 +138,13 @@ COMMAND and ARGS stands for `cider-any' backend documentation."
   (cl-case command
     (check (eq major-mode 'xquery-mode))
     (init "(require '[uruk.core :as uruk])")
-    (eval (cider-any-uruk-parse-variables-form))
-    (handle (progn (cider-any-uruk-save-variables (read args))
-                   (cons (cider-any-uruk-eval-form) 'handle-eval)))
+    (eval (progn
+            (when current-prefix-arg
+              (setq cider-any-uruk-variables nil))
+            (cider-any-uruk-parse-variables-form)))
+    (handle (progn
+              (cider-any-uruk-save-variables (read args))
+              (cons (cider-any-uruk-eval-form) 'handle-eval)))
     (handle-eval (apply cider-any-uruk-handler (read args)))))
 
 (add-to-list 'cider-any-backends 'cider-any-uruk)
