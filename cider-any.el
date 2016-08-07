@@ -106,15 +106,21 @@ represented as list of strings."
                 `(,(region-beginning)
                   ,(region-end))))))))
 
-(defun cider-any-eval-handler (backend eval-context)
+(defun cider-any-eval-handler (backend command context)
   "Make an interactive eval handler for BACKEND.
-EVAL-CONTEXT is a BACKEND command which can be either a `handle'
-or `handle-init'."
+COMMAND is a BACKEND command which can be either a `handle' or
+`handle-init'."
   (nrepl-make-response-handler
    (current-buffer)
    (lambda (buffer value)
      (with-current-buffer buffer
-       (apply backend `(,eval-context ,value))))
+       (let ((next (apply backend `(,command ,value))))
+         (when (and next (listp next))
+           (cl-destructuring-bind
+               (next-form . next-command) next
+             (cider-interactive-eval
+              (format next-form (cider-any-eval-arg context))
+              (cider-any-eval-handler backend next-command context)))))))
    (lambda (_buffer out)
      (cider-emit-interactive-eval-output out))
    (lambda (_buffer err)
@@ -136,12 +142,12 @@ or `handle-init'."
         (push backend cider-any-initiated-backends)
         (cider-interactive-eval
          (apply backend '(init))
-         (cider-any-eval-handler backend 'handle-init)))
+         (cider-any-eval-handler backend 'handle-init context)))
       (cider-interactive-eval
        (format
         (apply backend '(eval context))
         (cider-any-eval-arg context))
-       (cider-any-eval-handler backend 'handle)))))
+       (cider-any-eval-handler backend 'handle context)))))
 
 ;;;###autoload
 (define-minor-mode cider-any-mode

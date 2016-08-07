@@ -97,6 +97,21 @@
      (local-set-key (kbd "q") 'quit-window)
      (current-buffer))))
 
+(defun cider-any-uruk-parse-variables-form ()
+  "Clojure form for external variable search."
+  "(doall (map second (re-seq
+                       #\"(?m)^declare variable \\$([\\w-]+) .* external;$\"
+                       \"%s\")))")
+
+(defun cider-any-uruk-save-variables (variables)
+  "Ask user for external XQuery variables values in this document."
+  (dolist (variable variables)
+    (unless (member variable cider-any-uruk-variables)
+      (let ((value (read (read-from-minibuffer (concat variable " value: ")))))
+        (setq cider-any-uruk-variables
+              (append cider-any-uruk-variables
+                      (list variable value)))))))
+
 (defun cider-any-uruk-eval-form ()
   "Clojure form for XQuery document revaluation."
   (format "(let [db %s]
@@ -123,8 +138,10 @@ COMMAND and ARGS stands for `cider-any' backend documentation."
   (cl-case command
     (check (eq major-mode 'xquery-mode))
     (init "(require '[uruk.core :as uruk])")
-    (eval (cider-any-uruk-eval-form))
-    (handle (apply cider-any-uruk-handler (read args)))))
+    (eval (cider-any-uruk-parse-variables-form))
+    (handle (progn (cider-any-uruk-save-variables (read args))
+                   (cons (cider-any-uruk-eval-form) 'handle-eval)))
+    (handle-eval (apply cider-any-uruk-handler (read args)))))
 
 (add-to-list 'cider-any-backends 'cider-any-uruk)
 
