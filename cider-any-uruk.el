@@ -106,15 +106,16 @@
                                 ;; NOTE: uruk doesn't work with nested comment literals
                                 (clojure.string/replace
                                  \"%%s\"
-                                 #\"\\(: cider-any-uruk-variables: .* :\\)\"
+                                 #\"(?s)\\(: Local Variables: :\\).*\\(: End: :\\)\"
                                  \"\")
-                                {:variables %s})))))"
+                                %s)))))"
           (cider-any-uruk-plist-to-map
            `(:uri ,cider-any-uruk-uri
              :user ,cider-any-uruk-user
              :password ,cider-any-uruk-password
              :content-base ,cider-any-uruk-content-base))
-          (cider-any-uruk-plist-to-map cider-any-uruk-variables)))
+          (cider-any-uruk-plist-to-map
+           `(:variables ,cider-any-uruk-variables))))
 
 (defun cider-any-uruk (command &rest args)
   "Eval XQuery in Cider.
