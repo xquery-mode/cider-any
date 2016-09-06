@@ -83,28 +83,35 @@ represented as list of strings."
   (interactive)
   (cider-any-eval 'region))
 
+(defun cider-any-string (string)
+  "Eval string in cider."
+  (interactive "sString: ")
+  (cider-any-eval string))
+
 (defun cider-any-eval-arg (context)
   "Get eval substitution for CONTEXT."
   (replace-regexp-in-string
    "\\\""
    "\\\\\""
-   (apply
-    #'buffer-substring-no-properties
-    (cl-case context
-      (buffer `(,(point-min)
-                ,(point-max)))
-      (function `(,(save-excursion
-                     (beginning-of-defun)
-                     (point))
-                  ,(save-excursion
-                     (end-of-defun)
-                     (point))))
-      (line `(,(line-beginning-position)
-              ,(line-end-position)))
-      (region (if (not (region-active-p))
-                  (error "Region is not marked")
-                `(,(region-beginning)
-                  ,(region-end))))))))
+   (if (stringp context)
+       context
+     (apply
+      #'buffer-substring-no-properties
+      (cl-case context
+        (buffer `(,(point-min)
+                  ,(point-max)))
+        (function `(,(save-excursion
+                       (beginning-of-defun)
+                       (point))
+                    ,(save-excursion
+                       (end-of-defun)
+                       (point))))
+        (line `(,(line-beginning-position)
+                ,(line-end-position)))
+        (region (if (not (region-active-p))
+                    (error "Region is not marked")
+                  `(,(region-beginning)
+                    ,(region-end)))))))))
 
 (defun cider-any-eval-handler (backend eval-context)
   "Make an interactive eval handler for BACKEND.
