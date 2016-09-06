@@ -79,23 +79,25 @@
 
 (defun cider-any-uruk-display-buffer (&rest content)
   "Show CONTENT in the buffer."
-  (pop-to-buffer
-   (with-current-buffer
-       (get-buffer-create (format cider-any-uruk-buffer-template (buffer-name)))
-     (read-only-mode -1)
-     (erase-buffer)
-     (insert (car content))
-     (dolist (item (cdr content))
-       (insert "\n")
-       (insert (make-string 1 ?\))
-       (insert "\n")
-       (insert item))
-     (goto-char (point-min))
-     (normal-mode)
-     (page-break-lines-mode 1)
-     (read-only-mode 1)
-     (local-set-key (kbd "q") 'quit-window)
-     (current-buffer))))
+  (if (not content)
+      (message "Evaluation completes with on result")
+    (pop-to-buffer
+     (with-current-buffer
+	 (get-buffer-create (format cider-any-uruk-buffer-template (buffer-name)))
+       (read-only-mode -1)
+       (erase-buffer)
+       (insert (car content))
+       (dolist (item (cdr content))
+	 (insert "\n")
+	 (insert (make-string 1 ?\))
+	 (insert "\n")
+	 (insert item))
+       (goto-char (point-min))
+       (normal-mode)
+       (page-break-lines-mode 1)
+       (read-only-mode 1)
+       (local-set-key (kbd "q") 'quit-window)
+       (current-buffer)))))
 
 (defun cider-any-uruk-parse-variables-form ()
   "Clojure form for external variable search."
