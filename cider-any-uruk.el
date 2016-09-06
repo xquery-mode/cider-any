@@ -80,7 +80,7 @@
 (defun cider-any-uruk-display-buffer (&rest content)
   "Show CONTENT in the buffer."
   (if (not content)
-      (message "Evaluation completes with on result")
+      (message "XQuery returned an empty sequence")
     (pop-to-buffer
      (with-current-buffer
 	 (get-buffer-create (format cider-any-uruk-buffer-template (buffer-name)))
