@@ -20,19 +20,6 @@
     cider-any-uruk-password
     cider-any-uruk-content-base))
 
-;;;###autoload
-(defun dbselector-add (uri user password content-base)
-  "Register database params."
-  (interactive (list (read-string "Uri: ")
-                     (read-string "User: ")
-                     (read-passwd "Passwd: ")
-                     (read-string "DB: ")))
-  (push (mapcar (lambda (x) (if (string= x "") nil x))
-                (list nil uri user password content-base))
-        dbselector-databases)
-  (dbselector-rehash)
-  (force-mode-line-update))
-
 (defun dbselector-rehash ()
   "Ensure Uruk DB id uniqueness."
   (cl-flet* ((host (x) (url-host (url-generic-parse-url x)))
@@ -78,6 +65,19 @@
     dbselector-databases)))
 
 ;;;###autoload
+(defun dbselector-add (uri user password content-base)
+  "Register database params."
+  (interactive (list (read-string "Uri: ")
+                     (read-string "User: ")
+                     (read-passwd "Passwd: ")
+                     (read-string "DB: ")))
+  (push (mapcar (lambda (x) (if (string= x "") nil x))
+                (list nil uri user password content-base))
+        dbselector-databases)
+  (dbselector-rehash)
+  (force-mode-line-update))
+
+;;;###autoload
 (defun dbselector-remove (db)
   "Unregister database params."
   (interactive (list (completing-read "DB: " (mapcar 'car dbselector-databases))))
@@ -91,7 +91,10 @@
 ;;;###autoload
 (defun dbselector-set (db)
   "Set Uruk database for current buffer."
-  (interactive (list (completing-read "DB: " (mapcar 'car dbselector-databases))))
+  (interactive (list (if dbselector-databases
+                         (completing-read "DB: " (mapcar 'car dbselector-databases))
+                       (call-interactively 'dbselector-add)
+                       (caar dbselector-databases))))
   (cl-mapcar 'set
              dbselector-uruk-variables
              (cdr (assoc db dbselector-databases)))
