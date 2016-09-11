@@ -4,8 +4,9 @@
 
 ;;; Code:
 
-(require 'cl-lib)
 (require 'cider-any-uruk)
+(require 'cl-lib)
+(require 'url-parse)
 
 (defgroup dbselector nil
   "Per buffer Uruk DB connection parameters."
@@ -14,27 +15,68 @@
 (defvar dbselector-databases nil)
 
 (defvar dbselector-uruk-variables
-  '(cider-any-uruk-content-base
-    cider-any-uruk-uri
+  '(cider-any-uruk-uri
     cider-any-uruk-user
-    cider-any-uruk-password))
+    cider-any-uruk-password
+    cider-any-uruk-content-base))
 
 ;;;###autoload
-(defun dbselector-add (content-base uri user password)
+(defun dbselector-add (uri user password content-base)
   "Register database params."
-  (interactive (list (read-string "DB: ")
-                     (read-string "Uri: ")
+  (interactive (list (read-string "Uri: ")
                      (read-string "User: ")
-                     (read-string "Passwd: ")))
+                     (read-passwd "Passwd: ")
+                     (read-string "DB: ")))
   (push (mapcar (lambda (x) (if (string= x "") nil x))
-                (list content-base uri user password))
-        dbselector-databases))
+                (list nil uri user password content-base))
+        dbselector-databases)
+  (dbselector-rehash)
+  (force-mode-line-update))
+
+(defun dbselector-rehash ()
+  "Ensure Uruk DB id uniqueness."
+  (cl-flet* ((host (x) (url-host (url-generic-parse-url x)))
+             (port (x) (url-port (url-generic-parse-url x)))
+             (dbselector-dubplicates (predicate seq)
+              (let* ((col (mapcar predicate seq))
+                     counters)
+                (dolist (x col)
+                  (if (assoc x counters)
+                      (cl-incf (cdr (assoc x counters)))
+                    (push (cons x 1) counters)))
+                (mapcar 'car (cl-remove-if (lambda (x) (eq 1 (cdr x))) counters))))
+             (same-host-for (db)
+              (let* ((same-db (cl-remove-if-not
+                               (lambda (x) (string= (cl-fifth x) db))
+                               dbselector-databases)))
+                (dbselector-dubplicates
+                 (lambda (x)
+                   (host (cl-second x)))
+                 same-db))))
+    (let ((dups (dbselector-dubplicates #'cl-fifth dbselector-databases)))
+      (setq dbselector-databases
+            (mapcar (lambda (x)
+                      (cl-destructuring-bind (key uri user passwd db) x
+                        (setq key
+                              (cond
+                               ((member db dups)
+                                (if (member (host uri) (same-host-for db))
+                                    (concat (host uri) ":" (number-to-string (port uri)) "/" db)
+                                  (concat (host uri) "/" db)))
+                               ((null db)
+                                (concat (host uri) "/"))
+                               (t db)))
+                        (list key uri user passwd db)))
+                    dbselector-databases)))))
 
 ;;;###autoload
 (defun dbselector-remove (db)
   "Unregister database params."
   (interactive (list (completing-read "DB: " (mapcar 'car dbselector-databases))))
-  (print (delete (print (assoc db dbselector-databases)) dbselector-databases)))
+  (setq dbselector-databases
+        (cl-remove-if (lambda (x) (string= (car x) db))
+                      dbselector-databases))
+  (dbselector-rehash))
 
 ;;;###autoload
 (defun dbselector-set (db)
@@ -42,7 +84,7 @@
   (interactive (list (completing-read "DB: " (mapcar 'car dbselector-databases))))
   (cl-mapcar 'set
              dbselector-uruk-variables
-             (assoc db dbselector-databases))
+             (cdr (assoc db dbselector-databases)))
   (force-mode-line-update))
 
 ;;;###autoload
@@ -64,12 +106,12 @@
   "Keymap for dbselector-mode.")
 
 (defun dbselector-mode-indicator ()
-  (if cider-any-uruk-uri
-      (format "[%s]"
-              (or cider-any-uruk-content-base
-                  (format "%s/default"
-                          cider-any-uruk-user)))
-    ""))
+  (let ((id (car (cl-find-if
+                  (lambda (x)
+                    (equal (cdr x)
+                           (mapcar 'symbol-value dbselector-uruk-variables)))
+                  dbselector-databases))))
+    (if id (format "[%s]" id) "")))
 
 ;;;###autoload
 (define-minor-mode dbselector-mode
