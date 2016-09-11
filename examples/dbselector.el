@@ -69,10 +69,20 @@
                         (list key uri user passwd db)))
                     dbselector-databases)))))
 
+(defun dbselector-current-id ()
+  (car
+   (cl-find-if
+    (lambda (x)
+      (equal (cdr x)
+             (mapcar 'symbol-value dbselector-uruk-variables)))
+    dbselector-databases)))
+
 ;;;###autoload
 (defun dbselector-remove (db)
   "Unregister database params."
   (interactive (list (completing-read "DB: " (mapcar 'car dbselector-databases))))
+  (when (string= db (dbselector-current-id))
+    (dbselector-unset))
   (setq dbselector-databases
         (cl-remove-if (lambda (x) (string= (car x) db))
                       dbselector-databases))
@@ -106,11 +116,7 @@
   "Keymap for dbselector-mode.")
 
 (defun dbselector-mode-indicator ()
-  (let ((id (car (cl-find-if
-                  (lambda (x)
-                    (equal (cdr x)
-                           (mapcar 'symbol-value dbselector-uruk-variables)))
-                  dbselector-databases))))
+  (let ((id (dbselector-current-id)))
     (if id (format "[%s]" id) "")))
 
 ;;;###autoload
