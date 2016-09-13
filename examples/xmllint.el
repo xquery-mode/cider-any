@@ -22,14 +22,20 @@
                      (lambda (result)
                        (with-temp-buffer
                          (insert result)
-                         (normal-mode)
-                         (if (not (eq major-mode 'nxml-mode))
-                             result
-                           (shell-command-on-region
-                            (point-min) (point-max)
-                            "xmllint --format -" (buffer-name) t)
-                           (indent-region (point-min) (point-max))
-                           (buffer-substring-no-properties (point-min) (point-max)))))
+                         (goto-char (point-min))
+                         (if (and (looking-at-p "[[:space:]]*<")
+                                  (zerop
+                                   (shell-command-on-region
+                                    (point-min)
+                                    (point-max)
+                                    "xmllint --format -"
+                                    (current-buffer)
+                                    t)))
+                             (progn
+                               (nxml-mode)
+                               (indent-region (point-min) (point-max))
+                               (buffer-substring-no-properties (point-min) (point-max)))
+                           result)))
                      content))))
     (when (bufferp res)
       (with-current-buffer res
