@@ -92,9 +92,11 @@
 
 (defun cider-any-uruk-eval-form ()
   "Clojure form for XQuery document revaluation."
-  (format "(let [db %s]
-             (with-open [session (uruk/create-session db)]
-               (doall (map str (uruk/execute-xquery session \"%%s\")))))"
+  (format "(do
+             (require '[uruk.core :as uruk])
+             (let [db %s]
+               (with-open [session (uruk/create-session db)]
+                 (doall (map str (uruk/execute-xquery session \"%%s\"))))))"
           (cider-any-uruk-plist-to-map
            `(:uri ,cider-any-uruk-uri
              :user ,cider-any-uruk-user
@@ -106,7 +108,6 @@
 COMMAND and ARGS stands for `cider-any' backend documentation."
   (cl-case command
     (check (eq major-mode 'xquery-mode))
-    (init "(require '[uruk.core :as uruk])")
     (eval (cider-any-uruk-eval-form))
     (handle (apply cider-any-uruk-handler (read args)))))
 

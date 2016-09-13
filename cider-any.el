@@ -30,14 +30,6 @@ following:
 current context.  Returning nil from this command passed control
 to the next backend.
 
-`init': Backend initialization form.  Result should be a string
-that contains a valid clojure form.  This form will be evaluated
-once in the user session.
-
-`handle-init': Process initialization result.  The second
-argument will hold initialization form result calculated
-asynchronously.  It is list of strings.
-
 `eval': Request to perform evaluation of current context.  The
 second argument is the context type passed as a symbol.
 `buffer', `function', `line' and `region' are default context
@@ -50,9 +42,6 @@ content.
 an evaluation result.  As with `handle-init' result is
 represented as list of strings."
   :type '(repeat :tag "User defined" (function)))
-
-(defvar cider-any-initiated-backends nil
-  "Keep initialized backends.")
 
 (defvar cider-any-mode-map
   (let ((map (make-sparse-keymap)))
@@ -139,11 +128,6 @@ or `handle-init'."
         (setq found t)))
     (if (not backend)
         (error "Can not evaluate current %s" context)
-      (unless (memq backend cider-any-initiated-backends)
-        (push backend cider-any-initiated-backends)
-        (cider-interactive-eval
-         (apply backend '(init))
-         (cider-any-eval-handler backend 'handle-init)))
       (cider-interactive-eval
        (format
         (apply backend '(eval context))
