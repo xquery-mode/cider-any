@@ -1,4 +1,4 @@
-;;; xmllint.el --- XML results pretty printer.
+;;; cider-any-uruk-pprint.el --- XML results pretty printer.
 
 ;;; Commentary:
 
@@ -6,16 +6,16 @@
 
 (require 'cider-any-uruk)
 
-(defgroup xmllint nil
+(defgroup cider-any-uruk-pprint nil
   "XML results pretty printer."
   :group 'cider-any-uruk)
 
-(defcustom xmllint-indicator " •"
+(defcustom cider-any-uruk-pprint-indicator " •"
   "String for pretty print indication.")
 
-(defvar xmllint-old-uruk-handler nil)
+(defvar cider-any-uruk-pprint-old-handler nil)
 
-(defun xmllint-pprint (&rest content)
+(defun cider-any-uruk-do-pprint (&rest content)
   "Pretty print xml content first."
   (let ((res (apply 'cider-any-uruk-display-buffer
                     (mapcar
@@ -40,21 +40,21 @@
     (when (bufferp res)
       (with-current-buffer res
         (setq mode-line-format
-              (cons '(:propertize xmllint-indicator face bold)
+              (cons '(:propertize cider-any-uruk-pprint-indicator face bold)
                     mode-line-format))))))
 
 ;;;###autoload
-(define-minor-mode xmllint-mode
+(define-minor-mode cider-any-uruk-pprint-mode
   "XML results pretty printer."
   :lighter nil
-  :group 'xmllint
+  :group 'cider-any-uruk-pprint
   :global t
-  (if xmllint-mode
-      (setq xmllint-old-uruk-handler cider-any-uruk-handler
-            cider-any-uruk-handler #'xmllint-pprint)
-    (setq cider-any-uruk-handler xmllint-old-uruk-handler
-          xmllint-old-uruk-handler nil)))
+  (if cider-any-uruk-pprint-mode
+      (setq cider-any-uruk-pprint-old-handler cider-any-uruk-handler
+            cider-any-uruk-handler #'cider-any-uruk-do-pprint)
+    (setq cider-any-uruk-handler cider-any-uruk-pprint-old-handler
+          cider-any-uruk-pprint-old-handler nil)))
 
-(provide 'xmllint)
+(provide 'cider-any-uruk-pprint)
 
-;;; xmllint.el ends here
+;;; cider-any-uruk-pprint.el ends here
