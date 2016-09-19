@@ -42,15 +42,6 @@
   :type 'string
   :group 'cider-any-uruk)
 
-(defun cider-any-uruk-safe-variables-p (variables)
-  (and (consp variables)
-       (= 0 (% (length variables) 2))))
-
-(defvar-local cider-any-uruk-variables nil
-  "Plist of variables used in uruk query map.")
-
-(put 'cider-any-uruk-variables 'safe-local-variable 'cider-any-uruk-safe-variables-p)
-
 (defun cider-any-uruk-plist-to-map (plist)
   "Convert Elisp PLIST into Clojure map."
   (concat "{"
@@ -101,29 +92,22 @@
 
 (defun cider-any-uruk-eval-form ()
   "Clojure form for XQuery document revaluation."
-  (format "(let [db %s]
-             (with-open [session (uruk/create-session db)]
-               (doall (map str (uruk/execute-xquery
-                                session
-                                ;; NOTE: uruk doesn't work with nested comment literals
-                                (clojure.string/replace
-                                 \"%%s\"
-                                 #\"\\(: cider-any-uruk-variables: .* :\\)\"
-                                 \"\")
-                                {:variables %s})))))"
+  (format "(do
+             (require '[uruk.core :as uruk])
+             (let [db %s]
+               (with-open [session (uruk/create-session db)]
+                 (doall (map str (uruk/execute-xquery session \"%%s\"))))))"
           (cider-any-uruk-plist-to-map
            `(:uri ,cider-any-uruk-uri
              :user ,cider-any-uruk-user
              :password ,cider-any-uruk-password
-             :content-base ,cider-any-uruk-content-base))
-          (cider-any-uruk-plist-to-map cider-any-uruk-variables)))
+             :content-base ,cider-any-uruk-content-base))))
 
 (defun cider-any-uruk (command &rest args)
   "Eval XQuery in Cider.
 COMMAND and ARGS stands for `cider-any' backend documentation."
   (cl-case command
     (check (eq major-mode 'xquery-mode))
-    (init "(require '[uruk.core :as uruk])")
     (eval (cider-any-uruk-eval-form))
     (handle (apply cider-any-uruk-handler (read args)))))
 
