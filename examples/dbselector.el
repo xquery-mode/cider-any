@@ -111,10 +111,10 @@
 
 (defvar dbselector-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-c d b a") 'dbselector-add)
-    (define-key map (kbd "C-c d b r") 'dbselector-remove)
-    (define-key map (kbd "C-c d b s") 'dbselector-set)
-    (define-key map (kbd "C-c d b u") 'dbselector-unset)
+    (define-key map (kbd "C-c b a") 'dbselector-add)
+    (define-key map (kbd "C-c b r") 'dbselector-remove)
+    (define-key map (kbd "C-c b s") 'dbselector-set)
+    (define-key map (kbd "C-c b u") 'dbselector-unset)
     map)
   "Keymap for dbselector-mode.")
 
