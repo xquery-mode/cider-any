@@ -24,7 +24,7 @@
   "Ensure Uruk DB id uniqueness."
   (cl-flet* ((host (x) (url-host (url-generic-parse-url x)))
              (port (x) (url-port (url-generic-parse-url x)))
-             (dbselector-dubplicates (predicate seq)
+             (dbselector-duplicates (predicate seq)
               (let* ((col (mapcar predicate seq))
                      counters)
                 (dolist (x col)
@@ -36,11 +36,11 @@
               (let* ((same-db (cl-remove-if-not
                                (lambda (x) (string= (cl-fifth x) db))
                                dbselector-databases)))
-                (dbselector-dubplicates
+                (dbselector-duplicates
                  (lambda (x)
                    (host (cl-second x)))
                  same-db))))
-    (let ((dups (dbselector-dubplicates #'cl-fifth dbselector-databases)))
+    (let ((dups (dbselector-duplicates #'cl-fifth dbselector-databases)))
       (setq dbselector-databases
             (mapcar (lambda (x)
                       (cl-destructuring-bind (key uri user passwd db) x
