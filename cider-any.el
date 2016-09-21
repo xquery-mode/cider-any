@@ -77,6 +77,17 @@ represented as list of strings."
   (interactive "sString: ")
   (cider-any-eval string))
 
+;; hackish without lexical let, should be improved!
+(defvar cider-return-collection)
+(defun cider-any-string->list (string)
+  "Eval string in cider."
+  (setq cider-return-collection nil)
+  (let ((handler (lambda (eval-context &rest content)
+                   (setq cider-return-collection (read content)))))
+    (cider-any-eval string handler))
+  (sleep-for 0 100) ;; ugh, cider-any-eval is asynchronous! -> BUG! -> TO FIX!
+  cider-return-collection)
+
 (defun cider-any-eval-arg (context)
   "Get eval substitution for CONTEXT."
   (replace-regexp-in-string
@@ -117,7 +128,7 @@ or `handle-init'."
      (cider-emit-interactive-eval-err-output err))
    '()))
 
-(defun cider-any-eval (context)
+(defun cider-any-eval (context &optional custom-backend)
   "Try to evaluate current CONTEXT."
   (let ((backends cider-any-backends)
         backend found)
@@ -132,7 +143,7 @@ or `handle-init'."
        (format
         (apply backend '(eval context))
         (cider-any-eval-arg context))
-       (cider-any-eval-handler backend 'handle)))))
+       (cider-any-eval-handler (or custom-backend backend) 'handle)))))
 
 ;;;###autoload
 (define-minor-mode cider-any-mode
