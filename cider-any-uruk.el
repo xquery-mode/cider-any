@@ -12,8 +12,13 @@
   "Evaluate XQuery documents in the cider repl."
   :group 'cider-any)
 
-(defcustom cider-any-uruk-uri nil
-  "Uri uruk/create-session argument."
+(defcustom cider-any-uruk-host nil
+  "Host uruk/create-session argument."
+  :type 'string
+  :group 'cider-any-uruk)
+
+(defcustom cider-any-uruk-port nil
+  "Port uruk/create-session argument."
   :type 'string
   :group 'cider-any-uruk)
 
@@ -90,6 +95,11 @@
        (local-set-key (kbd "q") 'quit-window)
        (current-buffer)))))
 
+(defun cider-any-uruk-uri ()
+  (format "xcc://%s:%s"
+          cider-any-uruk-host
+          cider-any-uruk-port))
+
 (defun cider-any-uruk-eval-form ()
   "Clojure form for XQuery document revaluation."
   (format "(do
@@ -98,7 +108,7 @@
                (with-open [session (uruk/create-session db)]
                  (doall (map str (uruk/execute-xquery session \"%%s\"))))))"
           (cider-any-uruk-plist-to-map
-           `(:uri ,cider-any-uruk-uri
+           `(:uri ,(cider-any-uruk-uri)
              :user ,cider-any-uruk-user
              :password ,cider-any-uruk-password
              :content-base ,cider-any-uruk-content-base))))
