@@ -5,3 +5,4 @@ docker-ml/
 target/
 .lein-repl-history
 *.xqy
+MarkLogic.rpm
