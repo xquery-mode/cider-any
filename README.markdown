@@ -50,10 +50,3 @@ customize this behavior.
 ```lisp
 (setq cider-any-uruk-handler 'cider-any-uruk-browse)
 ```
-
-# Development environment
-
-```shell
-docker build -t marklogic:8 .
-docker run --name cider-any -P marklogic:8
-```
