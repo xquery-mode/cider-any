@@ -6,3 +6,4 @@ target/
 .lein-repl-history
 *.xqy
 *.rpm
+scripts/passwd
