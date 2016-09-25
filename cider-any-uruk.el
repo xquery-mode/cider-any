@@ -37,8 +37,18 @@
   :type 'function
   :group 'cider-any-uruk)
 
+(defcustom cider-any-uruk-error-handler 'cider-any-uruk-display-error
+  "Error handle function."
+  :type 'function
+  :group 'cider-any-uruk)
+
 (defcustom cider-any-uruk-buffer-template "*XQuery-Result-%s*"
   "Base buffer name to show XQuery documents."
+  :type 'string
+  :group 'cider-any-uruk)
+
+(defcustom cider-any-uruk-error-buffer-template "*XQuery-Error-%s*"
+  "Base buffer name to show XQuery errors."
   :type 'string
   :group 'cider-any-uruk)
 
@@ -90,6 +100,19 @@
        (local-set-key (kbd "q") 'quit-window)
        (current-buffer)))))
 
+(defun cider-any-uruk-display-error (error)
+  "Show ERROR in the buffer."
+  (pop-to-buffer
+   (with-current-buffer
+       (get-buffer-create (format cider-any-uruk-error-buffer-template (buffer-name)))
+       (read-only-mode -1)
+       (erase-buffer)
+       (insert error)
+       (goto-char (point-min))
+       (read-only-mode 1)
+       (local-set-key (kbd "q") 'quit-window)
+       (current-buffer))))
+
 (defun cider-any-uruk-eval-form ()
   "Clojure form for XQuery document revaluation."
   (format "(do
@@ -109,7 +132,8 @@ COMMAND and ARGS stands for `cider-any' backend documentation."
   (cl-case command
     (check (eq major-mode 'xquery-mode))
     (eval (cider-any-uruk-eval-form))
-    (handle (apply cider-any-uruk-handler (read args)))))
+    (handle (apply cider-any-uruk-handler (read args)))
+    (error (apply cider-any-uruk-error-handler args))))
 
 (add-to-list 'cider-any-backends 'cider-any-uruk)
 
