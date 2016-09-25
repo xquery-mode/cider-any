@@ -6,9 +6,8 @@ ADD MarkLogic-RHEL7-8.0-5.8.x86_64.rpm /tmp/MarkLogic-RHEL7-8.0-5.8.x86_64.rpm
 
 RUN yum -y install /tmp/MarkLogic-RHEL7-8.0-5.8.x86_64.rpm
 
-EXPOSE 7997 7998 7999 8000 8001 8002
+ENV LD_LIBRARY_PATH /opt/MarkLogic/lib/:/data/Lib
 
-CMD /usr/bin/env LD_LIBRARY_PATH=/opt/MarkLogic/lib/:/data/Lib /opt/MarkLogic/bin/MarkLogic && \
- mkdir -p /data/Logs && \
- touch /data/Logs/ErrorLog.txt && \
- tailf /data/Logs/ErrorLog.txt
+EXPOSE 7997 7999 8000 8001 8002 8889
+
+CMD /opt/MarkLogic/bin/MarkLogic && /bin/bash
