@@ -17,6 +17,6 @@
        :port "8889"
        :user "proofit404"
        :password (with-current-buffer
-		     (find-file-noselect (expand-file-name "passwd" (file-name-directory load-file-name)))
+		     (find-file-noselect (expand-file-name "passwd" (file-name-directory (or load-file-name default-directory))))
 		   (buffer-string))
        :content-base "TutorialDB"))
