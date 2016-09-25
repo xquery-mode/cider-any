@@ -14,6 +14,7 @@
 (setq cider-any-uruk-uri "xdbc://localhost:8889/"
       cider-any-uruk-user "proofit404"
       cider-any-uruk-password (with-current-buffer
-				  (find-file-noselect (expand-file-name "passwd" (file-name-directory load-file-name)))
+				  (find-file-noselect
+                                   (expand-file-name "passwd" (file-name-directory (or load-file-name default-directory))))
 				(buffer-string))
       cider-any-uruk-content-base "TutorialDB")
