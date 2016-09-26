@@ -11,7 +11,8 @@
 
 (add-hook 'xquery-mode-hook 'cider-any-mode)
 
-(setq cider-any-uruk-uri "xdbc://localhost:8889/"
+(setq cider-any-uruk-host "localhost"
+      cider-any-uruk-port "8889"
       cider-any-uruk-user "proofit404"
       cider-any-uruk-password (with-current-buffer
 				  (find-file-noselect (expand-file-name "passwd" (file-name-directory load-file-name)))
