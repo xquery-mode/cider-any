@@ -104,14 +104,17 @@
   "Clojure form for XQuery document revaluation."
   (format "(do
              (require '[uruk.core :as uruk])
-             (let [db %s]
-               (with-open [session (uruk/create-session db)]
+             (let [host \"%s\"
+                   port %s
+                   db %s]
+               (with-open [session (uruk/create-session {} (uruk/make-hosted-content-source host port db) {})]
                  (doall (map str (uruk/execute-xquery session \"%%s\"))))))"
+          cider-any-uruk-host
+          cider-any-uruk-port
           (cider-any-uruk-plist-to-map
-           `(:uri ,(cider-any-uruk-uri)
-             :user ,cider-any-uruk-user
-             :password ,cider-any-uruk-password
-             :content-base ,cider-any-uruk-content-base))))
+           `(:user ,cider-any-uruk-user
+                   :password ,cider-any-uruk-password
+                   :content-base ,cider-any-uruk-content-base))))
 
 (defun cider-any-uruk (command &rest args)
   "Eval XQuery in Cider.
