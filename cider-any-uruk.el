@@ -95,11 +95,6 @@
        (local-set-key (kbd "q") 'quit-window)
        (current-buffer)))))
 
-(defun cider-any-uruk-uri ()
-  (format "xcc://%s:%s"
-          cider-any-uruk-host
-          cider-any-uruk-port))
-
 (defun cider-any-uruk-eval-form ()
   "Clojure form for XQuery document revaluation."
   (format "(do
