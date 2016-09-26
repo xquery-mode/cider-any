@@ -5,4 +5,5 @@
 
 (development
  (depends-on "xquery-mode" :git "https://github.com/xquery-mode/xquery-mode.git")
- (depends-on "page-break-lines"))
+ (depends-on "page-break-lines")
+ (depends-on "cask"))
