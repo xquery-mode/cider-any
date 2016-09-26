@@ -107,7 +107,7 @@
              (let [host \"%s\"
                    port %s
                    db %s]
-               (with-open [session (uruk/create-session {} (uruk/make-hosted-content-source host port db) {})]
+               (with-open [session (uruk/create-default-session (uruk/make-hosted-content-source host port db))]
                  (doall (map str (uruk/execute-xquery session \"%%s\"))))))"
           cider-any-uruk-host
           cider-any-uruk-port
