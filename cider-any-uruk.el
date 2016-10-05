@@ -86,10 +86,7 @@
                  (doall (map str (uruk/execute-xquery session \"%%s\"))))))"
           (plist-get cider-any-uruk-connection :host)
           (plist-get cider-any-uruk-connection :port)
-          (cider-any-uruk-plist-to-map
-           `(:user ,(plist-get cider-any-uruk-connection :user)
-                   :password ,(plist-get cider-any-uruk-connection :password)
-                   :content-base ,(plist-get cider-any-uruk-connection :content-base)))))
+          (cider-any-uruk-plist-to-map cider-any-uruk-connection)))
 
 (defun cider-any-uruk (command &rest args)
   "Eval XQuery in Cider.
