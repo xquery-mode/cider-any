@@ -12,24 +12,9 @@
   "Evaluate XQuery documents in the cider repl."
   :group 'cider-any)
 
-(defcustom cider-any-uruk-uri nil
-  "Uri uruk/create-session argument."
-  :type 'string
-  :group 'cider-any-uruk)
-
-(defcustom cider-any-uruk-user nil
-  "User uruk/create-session argument."
-  :type 'string
-  :group 'cider-any-uruk)
-
-(defcustom cider-any-uruk-password nil
-  "Password uruk/create-session argument."
-  :type 'string
-  :group 'cider-any-uruk)
-
-(defcustom cider-any-uruk-content-base nil
-  "Content base uruk/create-session argument."
-  :type 'string
+(defcustom cider-any-uruk-connection '(:host nil :port nil :user nil :password nil :content-base nil)
+  "Property list of :host :port :user :password :content-base for uruk session creation"
+  :type 'plist
   :group 'cider-any-uruk)
 
 (defcustom cider-any-uruk-handler 'cider-any-uruk-display-buffer
@@ -94,14 +79,14 @@
   "Clojure form for XQuery document revaluation."
   (format "(do
              (require '[uruk.core :as uruk])
-             (let [db %s]
-               (with-open [session (uruk/create-session db)]
+             (let [host \"%s\"
+                   port %s
+                   db %s]
+               (with-open [session (uruk/create-default-session (uruk/make-hosted-content-source host port db))]
                  (doall (map str (uruk/execute-xquery session \"%%s\"))))))"
-          (cider-any-uruk-plist-to-map
-           `(:uri ,cider-any-uruk-uri
-             :user ,cider-any-uruk-user
-             :password ,cider-any-uruk-password
-             :content-base ,cider-any-uruk-content-base))))
+          (plist-get cider-any-uruk-connection :host)
+          (plist-get cider-any-uruk-connection :port)
+          (cider-any-uruk-plist-to-map cider-any-uruk-connection)))
 
 (defun cider-any-uruk (command &rest args)
   "Eval XQuery in Cider.
