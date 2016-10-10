@@ -27,6 +27,10 @@
   :type 'string
   :group 'cider-any-uruk)
 
+(defvar cider-any-uruk-buffer-filename
+  nil
+  "File name for the new XQuery document buffer to be created.")
+
 (defun cider-any-uruk-plist-to-map (plist)
   "Convert Elisp PLIST into Clojure map."
   (concat "{"
@@ -57,23 +61,27 @@
   "Show CONTENT in the buffer."
   (if (not content)
       (message "XQuery returned an empty sequence")
-    (pop-to-buffer
-     (with-current-buffer
-	 (get-buffer-create (format cider-any-uruk-buffer-template (buffer-name)))
-       (read-only-mode -1)
-       (erase-buffer)
-       (insert (car content))
-       (dolist (item (cdr content))
-	 (insert "\n")
-	 (insert (make-string 1 ?\))
-	 (insert "\n")
-	 (insert item))
-       (goto-char (point-min))
-       (normal-mode)
-       (page-break-lines-mode 1)
-       (read-only-mode 1)
-       (local-set-key (kbd "q") 'quit-window)
-       (current-buffer)))))
+    (prog1
+        (pop-to-buffer
+         (with-current-buffer
+             (get-buffer-create (format cider-any-uruk-buffer-template (buffer-name)))
+           (when cider-any-uruk-buffer-filename
+             (set-visited-file-name cider-any-uruk-buffer-filename)
+             (setq cider-any-uruk-buffer-filename nil))
+           (read-only-mode -1)
+           (erase-buffer)
+           (insert (car content))
+           (dolist (item (cdr content))
+             (insert "\n")
+             (insert (make-string 1 ?\))
+             (insert "\n")
+             (insert item))
+           (goto-char (point-min))
+           (normal-mode)
+           (page-break-lines-mode 1)
+           (read-only-mode 1)
+           (local-set-key (kbd "q") 'quit-window)
+           (current-buffer))))))
 
 (defun cider-any-uruk-eval-form ()
   "Clojure form for XQuery document revaluation."
