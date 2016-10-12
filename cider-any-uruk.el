@@ -29,7 +29,7 @@
 
 (defvar cider-any-uruk-buffer-filename
   nil
-  "File name for the new XQuery document buffer to be created.")
+  "Filename for the new XQuery document buffer to be created.")
 
 (defun cider-any-uruk-plist-to-map (plist)
   "Convert Elisp PLIST into Clojure map."
