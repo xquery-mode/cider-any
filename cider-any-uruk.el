@@ -7,6 +7,7 @@
 (require 'cl-lib)
 (require 'cider-any)
 (require 'page-break-lines)
+(require 'subr-x)
 
 (defgroup cider-any-uruk nil
   "Evaluate XQuery documents in the cider repl."
@@ -189,6 +190,27 @@ COMMAND and ARGS stands for `cider-any' backend documentation."
 xquery version \"1.0-ml\";
 xdmp:document-get(fn:concat(xdmp:modules-root(), \"%s\"))
 " document))))
+
+(defun cider-any-uruk-file-name-handler (operation &rest args)
+  "File handler for MarkLogic documents.
+
+See `file-name-handler-alist' for OPERATION and ARGS meaning."
+  (print operation)
+  (print args)
+  (let* ((filename (car args))
+         (document (string-remove-prefix "/marklogic:" filename)))
+    (cl-case operation
+      (file-directory-p nil)
+      (get-file-buffer (get-buffer-create "test.xqy"))
+      (file-name-nondirectory "test.xqy")
+      (directory-file-name "/")
+      (insert-file-contents (with-current-buffer (get-buffer-create "test.xqy")
+                              (insert (cider-any-uruk-document-get document))))
+      (file-attributes (file-attributes (executable-find "emacs")))
+      (t filename))))
+
+(add-to-list 'file-name-handler-alist
+             '("\\`/marklogic:" . cider-any-uruk-file-name-handler))
 
 (provide 'cider-any-uruk)
 
