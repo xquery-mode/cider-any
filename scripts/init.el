@@ -11,10 +11,12 @@
 
 (add-hook 'xquery-mode-hook 'cider-any-mode)
 
-(setq cider-any-uruk-host "localhost"
-      cider-any-uruk-port "8889"
-      cider-any-uruk-user "proofit404"
-      cider-any-uruk-password (with-current-buffer
-				  (find-file-noselect (expand-file-name "passwd" (file-name-directory load-file-name)))
-				(buffer-string))
-      cider-any-uruk-content-base "TutorialDB")
+(setq cider-any-uruk-connection
+      (list
+       :host "localhost"
+       :port "8889"
+       :user "proofit404"
+       :password (with-current-buffer
+		     (find-file-noselect (expand-file-name "passwd" (file-name-directory load-file-name)))
+		   (buffer-string))
+       :content-base "TutorialDB"))
