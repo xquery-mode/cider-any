@@ -183,6 +183,13 @@ COMMAND and ARGS stands for `cider-any' backend documentation."
 ;; compatibility alias.
 (defalias 'cider-any-string->list 'cider-any-eval-uruk-sync)
 
+(defun cider-any-uruk-document-get (document)
+  "Execute document-get request on DOCUMENT using MarkLogic service."
+  (car (cider-any-eval-uruk-sync (format "
+xquery version \"1.0-ml\";
+xdmp:document-get(fn:concat(xdmp:modules-root(), \"%s\"))
+" document))))
+
 (provide 'cider-any-uruk)
 
 ;;; cider-any-uruk.el ends here
