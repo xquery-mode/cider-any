@@ -162,6 +162,17 @@ COMMAND and ARGS stands for `cider-any' backend documentation."
 
 (add-to-list 'cider-any-backends 'cider-any-uruk)
 
+(defun cider-any-eval-uruk-sync (xquery)
+  "Eval specified XQUERY string asynchronously."
+  (let* ((arg (cider-any-eval-arg xquery))
+         (form (format (apply 'cider-any-uruk '(eval)) arg))
+         (connection (cider-current-connection))
+         (session (apply 'cider-any-uruk '(session))))
+    (read
+     (nrepl-dict-get
+      (nrepl-sync-request:eval form connection session)
+      "value"))))
+
 (provide 'cider-any-uruk)
 
 ;;; cider-any-uruk.el ends here
