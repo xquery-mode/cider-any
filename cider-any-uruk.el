@@ -86,6 +86,8 @@
   "Clojure form for XQuery document revaluation."
   (format "(do
              (require '[uruk.core :as uruk])
+             (set! *print-length* nil)
+             (set! *print-level* nil)
              (let [host \"%s\"
                    port %s
                    db %s]
@@ -95,11 +97,27 @@
           (plist-get cider-any-uruk-connection :port)
           (cider-any-uruk-plist-to-map cider-any-uruk-connection)))
 
+(defvar cider-any-uruk-session nil)
+
+(defun cider-any-uruk-connected ()
+  (let ((response (nrepl-sync-request:clone (current-buffer))))
+    (nrepl-dbind-response response (new-session err)
+      (if new-session
+          (setq cider-any-uruk-session new-session)
+        (error "Could not create new session (%s)" err)))))
+
+(defun cider-any-uruk-disconnected ()
+  (setq cider-any-uruk-session nil))
+
+(add-hook 'nrepl-connected-hook 'cider-any-uruk-connected)
+(add-hook 'nrepl-disconnected-hook 'cider-any-uruk-disconnected)
+
 (defun cider-any-uruk (command &rest args)
   "Eval XQuery in Cider.
 COMMAND and ARGS stands for `cider-any' backend documentation."
   (cl-case command
     (check (eq major-mode 'xquery-mode))
+    (session cider-any-uruk-session)
     (eval (cider-any-uruk-eval-form))
     (handle (apply cider-any-uruk-handler (read args)))))
 

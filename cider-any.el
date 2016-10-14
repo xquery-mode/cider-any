@@ -139,11 +139,14 @@ or `handle-init'."
         (setq found t)))
     (if (not backend)
         (error "Can not evaluate current %s" context)
-      (cider-interactive-eval
+      (nrepl-request:eval
        (format
         (apply backend '(eval context))
         (cider-any-eval-arg context))
-       (cider-any-eval-handler (or custom-backend backend) 'handle)))))
+       (cider-any-eval-handler (or custom-backend backend) 'handle)
+       (cider-current-connection)
+       (or (apply backend '(session context))
+           (cider-current-session))))))
 
 ;;;###autoload
 (define-minor-mode cider-any-mode
