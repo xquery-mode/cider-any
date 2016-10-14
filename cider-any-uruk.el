@@ -37,6 +37,11 @@
   :type 'string
   :group 'cider-any-uruk)
 
+(defvar cider-any-uruk-compilation-regexp-alist
+  ;; FIXME: remove hardcoded file name.
+  `(("^on line \\([[:digit:]]+\\)" (,(lambda () "test.xqy") "%s") 1))
+  "`compilation-error-regexp-alist' for uruk errors.")
+
 (defvar cider-any-uruk-buffer-filename nil
   "Filename for the new XQuery document buffer to be created.")
 
@@ -96,12 +101,14 @@
   (pop-to-buffer
    (with-current-buffer
        (get-buffer-create (format cider-any-uruk-error-buffer-template (buffer-name)))
+     (fundamental-mode)
      (read-only-mode -1)
      (erase-buffer)
      (insert error)
      (goto-char (point-min))
-     (read-only-mode 1)
-     (local-set-key (kbd "q") 'quit-window)
+     (compilation-mode)
+     (set (make-local-variable 'compilation-error-regexp-alist)
+          cider-any-uruk-compilation-regexp-alist)
      (current-buffer))))
 
 (defun cider-any-uruk-eval-form ()
