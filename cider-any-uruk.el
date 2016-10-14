@@ -173,6 +173,10 @@ COMMAND and ARGS stands for `cider-any' backend documentation."
       (nrepl-sync-request:eval form connection session)
       "value"))))
 
+;; FIXME: correct xdbc-selector.el and remove this backward
+;; compatibility alias.
+(defalias 'cider-any-string->list 'cider-any-eval-uruk-sync)
+
 (provide 'cider-any-uruk)
 
 ;;; cider-any-uruk.el ends here
