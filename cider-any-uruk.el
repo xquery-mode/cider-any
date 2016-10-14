@@ -40,7 +40,13 @@
 (defvar-local cider-any-uruk-origin nil)
 
 (defvar cider-any-uruk-compilation-regexp-alist
-  `(("^on line \\([[:digit:]]+\\)" (,(lambda () cider-any-uruk-origin) "%s") 1))
+  `(("^\\(in \\(.*\\), \\)?on line \\([[:digit:]]+\\)"
+     (,(lambda ()
+         (if (match-string-no-properties 2)
+             (concat "/marklogic:" (match-string-no-properties 2))
+           cider-any-uruk-origin))
+      "%s")
+     3))
   "`compilation-error-regexp-alist' for uruk errors.")
 
 (defvar cider-any-uruk-buffer-filename nil
