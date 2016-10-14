@@ -139,11 +139,14 @@ represented as list of strings."
         (setq found t)))
     (if (not backend)
         (error "Can not evaluate current %s" context)
-      (cider-interactive-eval
+      (nrepl-request:eval
        (format
         (apply backend '(eval context))
         (cider-any-eval-arg context))
-       (cider-any-eval-handler (or custom-backend backend))))))
+       (cider-any-eval-handler (or custom-backend backend))
+       (cider-current-connection)
+       (or (apply backend '(session context))
+           (cider-current-session))))))
 
 ;;;###autoload
 (define-minor-mode cider-any-mode
