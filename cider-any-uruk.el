@@ -13,7 +13,7 @@
   :group 'cider-any)
 
 (defcustom cider-any-uruk-connection '(:host nil :port nil :user nil :password nil :content-base nil)
-  "Property list of :host :port :user :password :content-base for uruk session creation"
+  "Property list of :host :port :user :password :content-base for uruk session creation."
   :type 'plist
   :group 'cider-any-uruk)
 
@@ -37,9 +37,10 @@
   :type 'string
   :group 'cider-any-uruk)
 
+(defvar-local cider-any-uruk-origin nil)
+
 (defvar cider-any-uruk-compilation-regexp-alist
-  ;; FIXME: remove hardcoded file name.
-  `(("^on line \\([[:digit:]]+\\)" (,(lambda () "test.xqy") "%s") 1))
+  `(("^on line \\([[:digit:]]+\\)" (,(lambda () cider-any-uruk-origin) "%s") 1))
   "`compilation-error-regexp-alist' for uruk errors.")
 
 (defvar cider-any-uruk-buffer-filename nil
@@ -99,17 +100,19 @@
 (defun cider-any-uruk-display-error (error)
   "Show ERROR in the buffer."
   (pop-to-buffer
-   (with-current-buffer
-       (get-buffer-create (format cider-any-uruk-error-buffer-template (buffer-name)))
-     (fundamental-mode)
-     (read-only-mode -1)
-     (erase-buffer)
-     (insert error)
-     (goto-char (point-min))
-     (compilation-mode)
-     (set (make-local-variable 'compilation-error-regexp-alist)
-          cider-any-uruk-compilation-regexp-alist)
-     (current-buffer))))
+   (let ((origin (buffer-file-name)))
+     (with-current-buffer
+         (get-buffer-create (format cider-any-uruk-error-buffer-template (buffer-name)))
+       (fundamental-mode)
+       (read-only-mode -1)
+       (erase-buffer)
+       (insert error)
+       (goto-char (point-min))
+       (compilation-mode)
+       (set (make-local-variable 'compilation-error-regexp-alist)
+            cider-any-uruk-compilation-regexp-alist)
+       (setq cider-any-uruk-origin origin)
+       (current-buffer)))))
 
 (defun cider-any-uruk-eval-form ()
   "Clojure form for XQuery document revaluation."
@@ -129,6 +132,9 @@
 (defvar cider-any-uruk-session nil)
 
 (defun cider-any-uruk-connected ()
+  "Cider connection established hook.
+
+Create unique nrepl session for uruk routines."
   (let ((response (nrepl-sync-request:clone (current-buffer))))
     (nrepl-dbind-response response (new-session err)
                           (if new-session
@@ -136,6 +142,9 @@
                             (error "Could not create new session (%s)" err)))))
 
 (defun cider-any-uruk-disconnected ()
+  "Cider connection closed hook.
+
+Remove unique nrepl session."
   (setq cider-any-uruk-session nil))
 
 (add-hook 'nrepl-connected-hook 'cider-any-uruk-connected)
