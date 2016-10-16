@@ -44,7 +44,7 @@
   `(("^\\(in \\(.*\\), \\)?on line \\([[:digit:]]+\\)"
      (,(lambda ()
          (if (match-string-no-properties 2)
-             (concat "/marklogic:" (match-string-no-properties 2))
+             (concat "<<marklogic>>" (match-string-no-properties 2))
            cider-any-uruk-origin))
       "%s")
      3))
@@ -171,6 +171,7 @@ COMMAND and ARGS stands for `cider-any' backend documentation."
 
 (defun cider-any-eval-uruk-sync (xquery)
   "Eval specified XQUERY string asynchronously."
+  (cider-ensure-connected)
   (let* ((arg (cider-any-eval-arg xquery))
          (form (format (apply 'cider-any-uruk '(eval)) arg))
          (connection (cider-current-connection))
@@ -195,22 +196,24 @@ xdmp:document-get(fn:concat(xdmp:modules-root(), \"%s\"))
   "File handler for MarkLogic documents.
 
 See `file-name-handler-alist' for OPERATION and ARGS meaning."
-  (print operation)
-  (print args)
-  (let* ((filename (car args))
-         (document (string-remove-prefix "/marklogic:" filename)))
+  (let ((filename (car args)))
     (cl-case operation
-      (file-directory-p nil)
-      (get-file-buffer (get-buffer-create "test.xqy"))
-      (file-name-nondirectory "test.xqy")
-      (directory-file-name "/")
-      (insert-file-contents (with-current-buffer (get-buffer-create "test.xqy")
-                              (insert (cider-any-uruk-document-get document))))
-      (file-attributes (file-attributes (executable-find "emacs")))
-      (t filename))))
+      ((expand-file-name file-truename) filename)
+      ((file-exists-p file-remote-p file-regular-p) t)
+      ((file-directory-p file-writable-p vc-registered) nil)
+      (file-attributes (file-attributes (locate-library "files")))
+      (file-modes (file-modes (locate-library "files")))
+      (insert-file-contents (let* ((document (string-remove-prefix "<<marklogic>>" filename))
+                                   (result (cider-any-uruk-document-get document)))
+                              (insert result)
+                              (setq buffer-file-name filename)
+                              (list filename (length result))))
+      (t (let ((inhibit-file-name-handlers '(cider-any-uruk-file-name-handler))
+               (inhibit-file-name-operation operation))
+           (apply operation args))))))
 
 (add-to-list 'file-name-handler-alist
-             '("\\`/marklogic:" . cider-any-uruk-file-name-handler))
+             '("\\`<<marklogic>>" . cider-any-uruk-file-name-handler))
 
 (provide 'cider-any-uruk)
 
