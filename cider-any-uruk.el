@@ -76,9 +76,6 @@
     (pop-to-buffer
      (with-current-buffer
          (get-buffer-create (format cider-any-uruk-buffer-template (buffer-name)))
-       (when cider-any-uruk-buffer-filename
-         (cider-any-uruk-set-file-name cider-any-uruk-buffer-filename)
-         (setq cider-any-uruk-buffer-filename nil))
        (read-only-mode -1)
        (erase-buffer)
        (insert (car content))
@@ -88,10 +85,16 @@
          (insert "\n")
          (insert item))
        (goto-char (point-min))
-       (normal-mode)
-       (page-break-lines-mode 1)
-       (read-only-mode 1)
-       (local-set-key (kbd "q") 'quit-window)
+       (if cider-any-uruk-buffer-filename
+           (progn
+             (cider-any-uruk-set-file-name cider-any-uruk-buffer-filename)
+             (setq cider-any-uruk-buffer-filename nil))
+         ;; these settings only if we haven't set a file-name
+         (progn
+           (normal-mode)
+           (page-break-lines-mode 1)
+           (read-only-mode 1)
+           (local-set-key (kbd "q") 'quit-window)))
        (set-buffer-modified-p nil)
        (current-buffer)))))
 
