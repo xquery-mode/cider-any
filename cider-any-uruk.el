@@ -92,6 +92,7 @@
        (page-break-lines-mode 1)
        (read-only-mode 1)
        (local-set-key (kbd "q") 'quit-window)
+       (set-buffer-modified-p nil)
        (current-buffer)))))
 
 (defun cider-any-uruk-eval-form ()
