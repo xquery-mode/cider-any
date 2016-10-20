@@ -175,11 +175,10 @@ COMMAND and ARGS stands for `cider-any' backend documentation."
   (let* ((arg (cider-any-eval-arg xquery))
          (form (format (apply 'cider-any-uruk '(eval)) arg))
          (connection (cider-current-connection))
-         (session (apply 'cider-any-uruk '(session))))
-    (read
-     (nrepl-dict-get
-      (nrepl-sync-request:eval form connection session)
-      "value"))))
+         (session (apply 'cider-any-uruk '(session)))
+         (response (nrepl-sync-request:eval form connection session))
+         (value (nrepl-dict-get response "value")))
+    (and value (read value))))
 
 ;; FIXME: correct xdbc-selector.el and remove this backward
 ;; compatibility alias.
@@ -204,7 +203,8 @@ See `file-name-handler-alist' for OPERATION and ARGS meaning."
       (file-attributes (file-attributes (locate-library "files")))
       (file-modes (file-modes (locate-library "files")))
       (insert-file-contents (let* ((document (string-remove-prefix "<<marklogic>>" filename))
-                                   (result (cider-any-uruk-document-get document)))
+                                   (result (or (cider-any-uruk-document-get document)
+                                               (format "Unable to read %s document" document))))
                               (insert result)
                               (setq buffer-file-name filename)
                               (list filename (length result))))
