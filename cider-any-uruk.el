@@ -57,6 +57,18 @@
        (browse-url (concat "file://" filename))))
    content))
 
+(defun cider-any-uruk-set-file-name (file-name)
+  ;; Don't use (set-visited-file-name file-name) anymore,
+  ;; as the file-name might contain a path that might not exist locally
+  ;; and set-visited-file-name also
+  ;;  - changes default-directory acc. to the path. and that has side effects
+  ;;  - it usually sets buffer-auto-save-file-name as well, and that leads
+  ;;    to problems for non-existing paths
+  (setq buffer-file-name file-name)
+  (normal-mode t) ;; t means: normal-mode detection as done in find-file
+  (rename-buffer file-name t) ;; t means: make buffer name unique if not so already
+  )
+
 (defun cider-any-uruk-display-buffer (&rest content)
   "Show CONTENT in the buffer."
   (if (not content)
@@ -65,7 +77,7 @@
      (with-current-buffer
          (get-buffer-create (format cider-any-uruk-buffer-template (buffer-name)))
        (when cider-any-uruk-buffer-filename
-         (set-visited-file-name cider-any-uruk-buffer-filename)
+         (cider-any-uruk-set-file-name cider-any-uruk-buffer-filename)
          (setq cider-any-uruk-buffer-filename nil))
        (read-only-mode -1)
        (erase-buffer)
