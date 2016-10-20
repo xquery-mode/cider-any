@@ -150,11 +150,10 @@ COMMAND and ARGS stands for `cider-any' backend documentation."
   (let* ((arg (cider-any-eval-arg xquery))
          (form (format (apply 'cider-any-uruk '(eval)) arg))
          (connection (cider-current-connection))
-         (session (apply 'cider-any-uruk '(session))))
-    (read
-     (nrepl-dict-get
-      (nrepl-sync-request:eval form connection session)
-      "value"))))
+         (session (apply 'cider-any-uruk '(session)))
+         (response (nrepl-sync-request:eval form connection session))
+         (value (nrepl-dict-get response "value")))
+    (and value (read value))))
 
 (provide 'cider-any-uruk)
 
