@@ -94,7 +94,16 @@
            (normal-mode)
            (page-break-lines-mode 1)
            (read-only-mode 1)
-           (local-set-key (kbd "q") 'quit-window)))
+
+           ;; local-set-key actually changes the local map which is shared with all
+           ;; other buffers in the same major map.
+           ;; Therefore, copy current keymap so that we really set to a *new* buffer
+           ;; local keymap, see https://www.emacswiki.org/emacs/BufferLocalKeys
+           (let ((local-map (current-local-map)))
+             (when local-map ;; check first if there really is a local-map
+               (use-local-map (copy-keymap local-map))))
+           (local-set-key (kbd "q") 'quit-window)
+           ))
        (set-buffer-modified-p nil)
        (current-buffer)))))
 
