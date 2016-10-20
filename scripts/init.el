@@ -20,3 +20,5 @@
 		     (find-file-noselect (expand-file-name "passwd" (file-name-directory (or load-file-name default-directory))))
 		   (buffer-string))
        :content-base "TutorialDB"))
+
+(setq xquery-mode-indent-style 'native)
