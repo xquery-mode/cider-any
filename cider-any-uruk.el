@@ -66,8 +66,7 @@
   ;;    to problems for non-existing paths
   (setq buffer-file-name file-name)
   (normal-mode t) ;; t means: normal-mode detection as done in find-file
-  (rename-buffer file-name t) ;; t means: make buffer name unique if not so already
-  )
+  (rename-buffer file-name t)) ;; t means: make buffer name unique if not so already
 
 (defun cider-any-uruk-display-buffer (&rest content)
   "Show CONTENT in the buffer."
