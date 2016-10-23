@@ -170,7 +170,8 @@ ERRBACK if specified must have following signature:
     (pop-to-buffer
      (with-current-buffer
          (get-buffer-create (format eval-any-xquery-buffer-template (buffer-name)))
-       (read-only-mode -1)
+       (fundamental-mode)
+       (view-mode -1)
        (erase-buffer)
        (insert (car result))
        (dolist (item (cdr result))
@@ -183,19 +184,9 @@ ERRBACK if specified must have following signature:
            (progn
              (eval-any-xquery-set-file-name eval-any-xquery-buffer-filename)
              (setq eval-any-xquery-buffer-filename nil))
-         ;; these settings only if we haven't set a file-name
          (normal-mode)
-         (page-break-lines-mode 1)
-         (read-only-mode 1)
-         ;; local-set-key actually changes the local map which is
-         ;; shared with all other buffers in the same major map.
-         ;; Therefore, copy current keymap so that we really set to a
-         ;; *new* buffer local keymap, see
-         ;; https://www.emacswiki.org/emacs/BufferLocalKeys
-         (let ((local-map (current-local-map)))
-           (when local-map ;; check first if there really is a local-map
-             (use-local-map (copy-keymap local-map))))
-         (local-set-key (kbd "q") 'quit-window))
+         (view-mode 1)
+         (page-break-lines-mode 1))
        (set-buffer-modified-p nil)
        (current-buffer)))))
 
