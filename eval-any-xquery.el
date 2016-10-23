@@ -47,6 +47,7 @@ CALLBACK function must have following signature:
 ERRBACK if specified must have following signature:
 
     (ERRBACK ERROR &rest ARGS)"
+  (cider-ensure-connected)
   (let* ((arg (eval-any-xquery-escape xquery))
          (form (format (eval-any-xquery-get-form) arg))
          (nrepl-callback (apply #'eval-any-xquery-make-handler callback errback args))
@@ -56,6 +57,7 @@ ERRBACK if specified must have following signature:
 
 (defun eval-any-xquery-sync (xquery)
   "Eval specified XQUERY string synchronously."
+  (cider-ensure-connected)
   (let* ((arg (eval-any-xquery-escape xquery))
          (form (format (eval-any-xquery-get-form) arg))
          (connection (cider-current-connection))
