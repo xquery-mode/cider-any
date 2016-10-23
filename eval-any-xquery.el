@@ -179,8 +179,7 @@ ERRBACK if specified must have following signature:
        (erase-buffer)
        (eval-any-xquery-insert result)
        (normal-mode)
-       (view-mode 1)
-       (page-break-lines-mode 1)
+       (eval-any-xquery-after-normal-mode)
        (current-buffer)))))
 
 (defun eval-any-xquery-insert (result)
@@ -192,6 +191,10 @@ ERRBACK if specified must have following signature:
       (insert "\n")
       (insert item))
     (goto-char old-position)))
+
+(defun eval-any-xquery-after-normal-mode ()
+  (view-mode 1)
+  (page-break-lines-mode 1))
 
 
 ;;; NREPL session management.

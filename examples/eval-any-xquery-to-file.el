@@ -15,18 +15,16 @@
 (defvar eval-any-xquery-buffer-filename nil
   "Filename for the new XQuery document buffer to be created.")
 
-(defun eval-any-xquery-to-file-set-file-name (file-name)
-  (setq buffer-file-name file-name)
-  (normal-mode t)
-  (rename-buffer file-name t))
-
 (defun eval-any-xquery-to-file-handler (result &rest args)
   (let ((res (apply eval-any-xquery-to-file-old-handler result args)))
     (when (and res eval-any-xquery-buffer-filename)
       (with-current-buffer res
-        (eval-any-xquery-to-file-set-file-name eval-any-xquery-buffer-filename)
+        (setq buffer-file-name eval-any-xquery-buffer-filename)
+        (normal-mode t)
+        (rename-buffer eval-any-xquery-buffer-filename t)
         (setq eval-any-xquery-buffer-filename nil)
-        (set-buffer-modified-p nil)))
+        (set-buffer-modified-p nil)
+        (eval-any-xquery-after-normal-mode)))
     res))
 
 ;;;###autoload
