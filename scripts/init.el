@@ -9,6 +9,7 @@
 (require 'eval-any)
 (require 'eval-any-xquery)
 (require 'eval-any-xquery-pprint)
+(require 'eval-any-xquery-to-file)
 
 (add-hook 'clojure-mode-hook 'cider-mode)
 

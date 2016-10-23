@@ -183,24 +183,10 @@ ERRBACK if specified must have following signature:
          (insert "\n")
          (insert item))
        (goto-char (point-min))
-       (if eval-any-xquery-buffer-filename
-           (progn
-             (eval-any-xquery-set-file-name eval-any-xquery-buffer-filename)
-             (setq eval-any-xquery-buffer-filename nil))
-         (normal-mode)
-         (view-mode 1)
-         (page-break-lines-mode 1))
-       (set-buffer-modified-p nil)
+       (normal-mode)
+       (view-mode 1)
+       (page-break-lines-mode 1)
        (current-buffer)))))
-
-(defvar eval-any-xquery-buffer-filename
-  nil
-  "Filename for the new XQuery document buffer to be created.")
-
-(defun eval-any-xquery-set-file-name (file-name)
-  (setq buffer-file-name file-name)
-  (normal-mode t)
-  (rename-buffer file-name t))
 
 
 ;;; NREPL session management.
