@@ -18,14 +18,17 @@
   "Evaluate XQuery documents in the cider repl."
   :group 'eval-any)
 
-(defun eval-any-xquery-backend (command)
+(defun eval-any-xquery-backend (command &rest args)
   "Eval XQuery in Cider.
 COMMAND and ARGS stands for `eval-any' backend documentation."
   (cl-case command
     (check (eq major-mode 'xquery-mode))
-    (t (eval-any-xquery
+    (t (apply
+        #'eval-any-xquery
         (eval-any-xquery-get-arg command)
-        eval-any-xquery-handler))))
+        eval-any-xquery-handler
+        nil
+        args))))
 
 (add-to-list 'eval-any-backends 'eval-any-xquery-backend)
 
@@ -207,9 +210,9 @@ ERRBACK if specified must have following signature:
 (defun eval-any-xquery-connected ()
   (let ((response (nrepl-sync-request:clone (current-buffer))))
     (nrepl-dbind-response response (new-session err)
-                          (if new-session
-                              (setq eval-any-xquery-session new-session)
-                            (error "Could not create new session (%s)" err)))))
+      (if new-session
+          (setq eval-any-xquery-session new-session)
+        (error "Could not create new session (%s)" err)))))
 
 (defun eval-any-xquery-disconnected ()
   (setq eval-any-xquery-session nil))
