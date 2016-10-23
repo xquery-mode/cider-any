@@ -177,17 +177,21 @@ ERRBACK if specified must have following signature:
        (fundamental-mode)
        (view-mode -1)
        (erase-buffer)
-       (insert (car result))
-       (dolist (item (cdr result))
-         (insert "\n")
-         (insert (make-string 1 ?\))
-         (insert "\n")
-         (insert item))
-       (goto-char (point-min))
+       (eval-any-xquery-insert result)
        (normal-mode)
        (view-mode 1)
        (page-break-lines-mode 1)
        (current-buffer)))))
+
+(defun eval-any-xquery-insert (result)
+  (let ((old-position (point)))
+    (insert (car result))
+    (dolist (item (cdr result))
+      (insert "\n")
+      (insert (make-string 1 ?\))
+      (insert "\n")
+      (insert item))
+    (goto-char old-position)))
 
 
 ;;; NREPL session management.
