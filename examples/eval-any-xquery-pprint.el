@@ -20,7 +20,7 @@
 
 See `eval-any-xquery' callback definition for RESULT and ARGS
 meaning."
-  (let ((res (apply 'eval-any-xquery-display-buffer
+  (let ((res (apply eval-any-xquery-pprint-old-handler
                     (mapcar
                      (lambda (result)
                        (with-temp-buffer
@@ -41,11 +41,12 @@ meaning."
                            result)))
                      result)
                     args)))
-    (when (bufferp res)
+    (when res
       (with-current-buffer res
         (setq mode-line-format
               (cons '(:propertize eval-any-xquery-pprint-indicator face bold)
-                    mode-line-format))))))
+                    mode-line-format))))
+    res))
 
 ;;;###autoload
 (define-minor-mode eval-any-xquery-pprint-mode

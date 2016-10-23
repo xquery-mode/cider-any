@@ -21,13 +21,13 @@
   (rename-buffer file-name t))
 
 (defun eval-any-xquery-to-file-handler (result &rest args)
-  (let ((buf (apply eval-any-xquery-to-file-old-handler result args)))
-    (when eval-any-xquery-buffer-filename
-      (with-current-buffer buf
+  (let ((res (apply eval-any-xquery-to-file-old-handler result args)))
+    (when (and res eval-any-xquery-buffer-filename)
+      (with-current-buffer res
         (eval-any-xquery-to-file-set-file-name eval-any-xquery-buffer-filename)
         (setq eval-any-xquery-buffer-filename nil)
         (set-buffer-modified-p nil)))
-    buf))
+    res))
 
 ;;;###autoload
 (define-minor-mode eval-any-xquery-to-file-mode

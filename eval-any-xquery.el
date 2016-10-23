@@ -169,7 +169,8 @@ ERRBACK if specified must have following signature:
 (defun eval-any-xquery-display-buffer (result &rest _args)
   "Show RESULT in the buffer."
   (if (not result)
-      (message "XQuery returned an empty sequence")
+      (prog1 nil
+        (message "XQuery returned an empty sequence"))
     (pop-to-buffer
      (with-current-buffer
          (get-buffer-create (format eval-any-xquery-buffer-template (buffer-name)))
