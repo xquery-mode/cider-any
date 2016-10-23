@@ -1,23 +1,26 @@
-;;; cider-any-uruk-pprint.el --- XML results pretty printer.
+;;; eval-any-xquery-pprint.el --- XML results pretty printer.
 
 ;;; Commentary:
 
 ;;; Code:
 
-(require 'cider-any-uruk)
+(require 'eval-any-xquery)
 
-(defgroup cider-any-uruk-pprint nil
+(defgroup eval-any-xquery-pprint nil
   "XML results pretty printer."
-  :group 'cider-any-uruk)
+  :group 'eval-any-xquery)
 
-(defcustom cider-any-uruk-pprint-indicator " •"
+(defcustom eval-any-xquery-pprint-indicator " •"
   "String for pretty print indication.")
 
-(defvar cider-any-uruk-pprint-old-handler nil)
+(defvar eval-any-xquery-pprint-old-handler nil)
 
-(defun cider-any-uruk-do-pprint (&rest content)
-  "Pretty print xml content first."
-  (let ((res (apply 'cider-any-uruk-display-buffer
+(defun eval-any-xquery-do-pprint (result &rest args)
+  "Pretty print xml content first.
+
+See `eval-any-xquery' callback definition for RESULT and ARGS
+meaning."
+  (let ((res (apply 'eval-any-xquery-display-buffer
                     (mapcar
                      (lambda (result)
                        (with-temp-buffer
@@ -36,25 +39,26 @@
                                (indent-region (point-min) (point-max))
                                (buffer-substring-no-properties (point-min) (point-max)))
                            result)))
-                     content))))
+                     result)
+                    args)))
     (when (bufferp res)
       (with-current-buffer res
         (setq mode-line-format
-              (cons '(:propertize cider-any-uruk-pprint-indicator face bold)
+              (cons '(:propertize eval-any-xquery-pprint-indicator face bold)
                     mode-line-format))))))
 
 ;;;###autoload
-(define-minor-mode cider-any-uruk-pprint-mode
+(define-minor-mode eval-any-xquery-pprint-mode
   "XML results pretty printer."
   :lighter nil
-  :group 'cider-any-uruk-pprint
+  :group 'eval-any-xquery-pprint
   :global t
-  (if cider-any-uruk-pprint-mode
-      (setq cider-any-uruk-pprint-old-handler cider-any-uruk-handler
-            cider-any-uruk-handler #'cider-any-uruk-do-pprint)
-    (setq cider-any-uruk-handler cider-any-uruk-pprint-old-handler
-          cider-any-uruk-pprint-old-handler nil)))
+  (if eval-any-xquery-pprint-mode
+      (setq eval-any-xquery-pprint-old-handler eval-any-xquery-handler
+            eval-any-xquery-handler #'eval-any-xquery-do-pprint)
+    (setq eval-any-xquery-handler eval-any-xquery-pprint-old-handler
+          eval-any-xquery-pprint-old-handler nil)))
 
-(provide 'cider-any-uruk-pprint)
+(provide 'eval-any-xquery-pprint)
 
-;;; cider-any-uruk-pprint.el ends here
+;;; eval-any-xquery-pprint.el ends here

@@ -1,11 +1,14 @@
 (require 'cask)
 
-(let ((source-directory (locate-dominating-file load-file-name "Cask")))
+(let* ((source-directory (locate-dominating-file load-file-name "Cask"))
+       (examples-directory (expand-file-name "examples" source-directory)))
   (cask-initialize source-directory)
-  (add-to-list 'load-path source-directory))
+  (add-to-list 'load-path source-directory)
+  (add-to-list 'load-path examples-directory))
 
 (require 'eval-any)
 (require 'eval-any-xquery)
+(require 'eval-any-xquery-pprint)
 
 (add-hook 'clojure-mode-hook 'cider-mode)
 
