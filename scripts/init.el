@@ -4,14 +4,14 @@
   (cask-initialize source-directory)
   (add-to-list 'load-path source-directory))
 
-(require 'cider-any)
-(require 'cider-any-uruk)
+(require 'eval-any)
+(require 'eval-any-xquery)
 
 (add-hook 'clojure-mode-hook 'cider-mode)
 
-(add-hook 'xquery-mode-hook 'cider-any-mode)
+(add-hook 'xquery-mode-hook 'eval-any-mode)
 
-(setq cider-any-uruk-connection
+(setq eval-any-xquery-connection
       (list
        :host "localhost"
        :port "8889"
