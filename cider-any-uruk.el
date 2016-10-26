@@ -38,6 +38,12 @@
   :type 'string
   :group 'cider-any-uruk)
 
+(defcustom cider-any-uruk-marklogic-install-dir
+  (if (eq system-type 'windows-nt)
+      "C:\\Program Files\\MarkLogic"
+    "/opt/MarkLogic")
+  "MarkLogic server installation path.")
+
 (defvar-local cider-any-uruk-origin nil)
 
 (defvar cider-any-uruk-compilation-regexp-alist
@@ -188,8 +194,14 @@ COMMAND and ARGS stands for `cider-any' backend documentation."
   "Execute document-get request on DOCUMENT using MarkLogic service."
   (car (cider-any-eval-uruk-sync (format "
 xquery version \"1.0-ml\";
-xdmp:document-get(fn:concat(xdmp:modules-root(), \"%s\"))
-" document))))
+try {xdmp:document-get(\"%sModules%s\")}
+catch ($exception) {()};
+if (xdmp:modules-database() = 0)
+then
+  xdmp:document-get(fn:concat(xdmp:modules-root(), \"%s\"))
+else
+  fn:doc(\"%s\")
+" (file-name-directory (file-name-as-directory cider-any-uruk-marklogic-install-dir)) document document document))))
 
 (defun cider-any-uruk-file-name-handler (operation &rest args)
   "File handler for MarkLogic documents.
