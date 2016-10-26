@@ -213,7 +213,7 @@ See `file-name-handler-alist' for OPERATION and ARGS meaning."
       ((expand-file-name file-truename) filename)
       ((file-exists-p file-remote-p file-regular-p) t)
       ((file-directory-p file-writable-p vc-registered) nil)
-      (file-attributes (file-attributes (locate-library "files")))
+      (file-attributes (list nil 1 0 0 '(22095 15153 0 0) '(22095 15153 0 0) '(22095 15153 0 0) 197867 "-rw-r--r--" t (abs (random)) (abs (random))))
       (file-modes (file-modes (locate-library "files")))
       (insert-file-contents (let* ((document (string-remove-prefix "<<marklogic>>" filename))
                                    (result (or (cider-any-uruk-document-get document)
