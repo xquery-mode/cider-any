@@ -198,7 +198,8 @@ try {xdmp:document-get(\"%sModules%s\")}
 catch ($exception) {()};
 if (xdmp:modules-database() = 0)
 then
-  xdmp:document-get(fn:concat(xdmp:modules-root(), \"%s\"))
+  try {xdmp:document-get(fn:concat(xdmp:modules-root(), \"%s\"))}
+  catch ($exception) {()}
 else
   fn:doc(\"%s\")
 " (file-name-directory (file-name-as-directory cider-any-uruk-marklogic-install-dir)) document document document))))
