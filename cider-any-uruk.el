@@ -198,7 +198,7 @@ try {xdmp:document-get(\"%sModules%s\")}
 catch ($exception) {()};
 if (xdmp:modules-database() = 0)
 then
-  try {xdmp:document-get(fn:concat(xdmp:modules-root(), \"%s\"))}
+  try {xdmp:document-get(fn:replace(fn:concat(xdmp:modules-root(), \"%s\"), \"/+\", \"/\"))}
   catch ($exception) {()}
 else
   fn:doc(\"%s\")
