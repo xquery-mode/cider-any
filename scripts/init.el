@@ -22,3 +22,5 @@
        :content-base "TutorialDB"))
 
 (setq xquery-mode-indent-style 'native)
+
+(setq cider-repl-display-help-banner nil)
