@@ -34,8 +34,14 @@ docker start -i -a cider-any
 
 * Open http://localhost:8001/ in your browser and follow installation steps
 
+** Forests / Create
+   - CiderAnyForest
+
 ** Databases / Create
    - TutorialDB
+
+** Databases / TutorialDB / Forests
+   - Attach it to the `CiderAnyForest`
 
 ** Groups / Default / App Servers / Create XDBC
    - CiderAny
@@ -45,5 +51,5 @@ docker start -i -a cider-any
 * Run Emacs
 
 ```shell
-cask exec emacs -Q -l scripts/init.el test.xqy -f cider-jack-in
+cask exec emacs -l scripts/init.el -f cider-jack-in
 ```
