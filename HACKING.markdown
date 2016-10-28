@@ -47,6 +47,8 @@ docker start -i -a cider-any
    - CiderAny
    - /data
    - 8889
+   - (file system)
+   - TutorialDB
 
 * Run Emacs
 
