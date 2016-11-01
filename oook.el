@@ -190,6 +190,12 @@ ERRBACK if specified must have following signature:
        (browse-url (concat "file://" filename))))
    result))
 
+(defvar oook-after-display-hook nil
+  "Hook runs after result buffer shows up.")
+
+(add-hook 'oook-after-display-hook 'view-mode)
+(add-hook 'oook-after-display-hook 'page-break-lines-mode)
+
 (defun oook-display-buffer (result &rest _args)
   "Show RESULT in the buffer."
   (if (not result)
@@ -203,7 +209,7 @@ ERRBACK if specified must have following signature:
        (erase-buffer)
        (oook-insert-result result)
        (normal-mode)
-       (oook-after-normal-mode)
+       (run-hooks 'oook-after-display-hook)
        (current-buffer)))))
 
 (defun oook-insert-result (result)
@@ -215,10 +221,6 @@ ERRBACK if specified must have following signature:
       (insert "\n")
       (insert item))
     (goto-char old-position)))
-
-(defun oook-after-normal-mode ()
-  (view-mode 1)
-  (page-break-lines-mode 1))
 
 
 ;;; NREPL session management.

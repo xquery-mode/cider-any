@@ -19,7 +19,7 @@
         (normal-mode t)
         (rename-buffer filename t)
         (set-buffer-modified-p nil)
-        (oook-after-normal-mode)))
+        (run-hooks 'oook-after-display-hook)))
     res))
 
 (defun oook-eval-buffer-to-file ()
