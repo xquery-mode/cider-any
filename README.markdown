@@ -1,6 +1,6 @@
-# Cider Any
+# Oook
 
-Evaluate anything in cider.
+Evaluate XQuery documents in a different ways.
 
 # XQuery
 
@@ -18,22 +18,22 @@ System requirements:
 Load Emacs Lisp libraries in your configuration.
 
 ```lisp
-(require 'cider-any)
-(require 'cider-any-uruk)
+(require 'oook)
 ```
 
-Enable cider-any in xquery-mode by default.
+Enable oook-mode in the xquery-mode buffers by default.
 
 ```lisp
-(add-hook 'xquery-mode-hook 'cider-any-mode)
+(add-hook 'xquery-mode-hook 'oook-mode)
 ```
 
 Grain access to the MarkLogic account.
 
 ```lisp
-(setq cider-any-uruk-uri "xdbc://localhost:8889/"
-      cider-any-uruk-user "proofit404"
-      cider-any-uruk-password "<secret>")
+(setq oook-connection
+      '(:host "localhost" :port "8889"
+        :user "proofit404" :password "<secret>"
+        :content-base nil))
 ```
 
 ## Usage
@@ -48,5 +48,26 @@ If you want to open result document in the web browser you can
 customize this behavior.
 
 ```lisp
-(setq cider-any-uruk-handler 'cider-any-uruk-browse)
+(setq oook-eval-handler 'oook-browse)
+```
+
+## Extensions
+
+### Associate result with file
+
+Associate buffer evaluation result document with file on disk.
+
+```lisp
+(add-hook 'oook-mode-hook 'oook-to-file-mode)
+```
+
+### Pretty print XML
+
+Applies pretty printer to XML parts of the result.
+
+* Install xmllint program
+* Enable oook-pprint-mode
+
+```lisp
+(oook-pprint-mode)
 ```
