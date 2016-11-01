@@ -7,7 +7,7 @@
   (add-to-list 'load-path examples-directory))
 
 (require 'oook)
-;; (require 'oook-xquery-pprint)
+(require 'oook-pprint)
 ;; (require 'oook-xquery-to-file)
 
 (add-hook 'clojure-mode-hook 'cider-mode)
