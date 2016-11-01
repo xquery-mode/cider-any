@@ -92,6 +92,7 @@
   "Evaluate anything.
 
 \\{oook-mode-map}"
+  :group 'oook
   :lighter " Oook"
   :keymap oook-mode-map)
 

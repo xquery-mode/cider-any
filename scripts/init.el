@@ -8,7 +8,7 @@
 
 (require 'oook)
 (require 'oook-pprint)
-;; (require 'oook-xquery-to-file)
+(require 'oook-to-file)
 
 (add-hook 'clojure-mode-hook 'cider-mode)
 
