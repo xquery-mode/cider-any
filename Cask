@@ -1,7 +1,7 @@
 (source gnu)
 (source melpa)
 
-(package-file "eval-any.el")
+(package-file "oook.el")
 
 (development
  (depends-on "xquery-mode" :git "https://github.com/xquery-mode/xquery-mode.git")

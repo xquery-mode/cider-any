@@ -6,16 +6,15 @@
   (add-to-list 'load-path source-directory)
   (add-to-list 'load-path examples-directory))
 
-(require 'eval-any)
-(require 'eval-any-xquery)
-(require 'eval-any-xquery-pprint)
-(require 'eval-any-xquery-to-file)
+(require 'oook)
+;; (require 'oook-xquery-pprint)
+;; (require 'oook-xquery-to-file)
 
 (add-hook 'clojure-mode-hook 'cider-mode)
 
-(add-hook 'xquery-mode-hook 'eval-any-mode)
+(add-hook 'xquery-mode-hook 'oook-mode)
 
-(setq eval-any-xquery-connection
+(setq oook-connection
       (list
        :host "localhost"
        :port "8889"
