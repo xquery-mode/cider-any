@@ -2,6 +2,13 @@
 
 Evaluate anything in cider.
 
+## Replaced by Oook
+
+The Cider Any was replaced
+by [Oook](https://github.com/xquery-mode/Oook).
+We decided to get rid of the backend design of cider-any and have a
+simpler interface that just lets you evaluate XQuery documents.
+
 # XQuery
 
 ## Installation
